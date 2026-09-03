@@ -1,5 +1,6 @@
 import json
 import os
+import tempfile
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,8 +16,10 @@ from parser import parse_docx
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
-UPLOAD_DIR, GENERATED_DIR = BASE_DIR / "uploads", BASE_DIR / "generated"
-UPLOAD_DIR.mkdir(exist_ok=True); GENERATED_DIR.mkdir(exist_ok=True)
+# Vercel's deployed application directory is read-only; /tmp is writable during a request.
+RUNTIME_DIR = Path(tempfile.gettempdir()) / "question-upload-dashboard" if os.environ.get("VERCEL") else BASE_DIR
+UPLOAD_DIR, GENERATED_DIR = RUNTIME_DIR / "uploads", RUNTIME_DIR / "generated"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True); GENERATED_DIR.mkdir(parents=True, exist_ok=True)
 HISTORY_FILE, ERROR_FILE = GENERATED_DIR / "upload_history.json", GENERATED_DIR / "error_questions.json"
 LOGIN_URL = "https://admin.errorfreetestseries.in/managebe/proxy/api/employee/employeeLogin"
 UPLOAD_URL = "https://admin.errorfreetestseries.in/managebe/proxy/api/questions/bulk/testQuestions"
@@ -93,7 +96,7 @@ def preview():
     _jobs[job_id] = {"questions": questions, "errors": errors, "subject": subject, "filename": name, "output_path": output_path}; _write(output_path, questions); _write(ERROR_FILE, errors)
     record = {"id": job_id, "datetime": datetime.now(timezone.utc).isoformat(), "filename": name, "category": "", "test": "", "subject": subject or "", "total": len(questions), "uploaded": len(questions), "failed": len(errors), "status": "WARNING" if errors else "SUCCESS", "activity": "JSON generated", "errors": errors}
     history = _read(HISTORY_FILE, []); history.insert(0, record); _write(HISTORY_FILE, history)
-    return jsonify({"job_id": job_id, "count": len(questions), "errors": errors, "questions": questions})
+    return jsonify({"job_id": job_id, "count": len(questions), "errors": errors, "questions": questions, "output_filename": f"{Path(name).stem}.json"})
 
 @app.get("/download/<job_id>")
 def download_json(job_id):
