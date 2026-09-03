@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.py[cod]
+
+uploads/*
+!uploads/.gitkeep
+
+generated/*
+!generated/.gitkeep
+
+~$*.docx

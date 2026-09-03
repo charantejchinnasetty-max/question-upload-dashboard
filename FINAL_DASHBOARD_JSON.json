@@ -1,0 +1,435 @@
+[
+    {
+        "uuid": "89ed5f7c-fd15-4e1e-a9c4-4489cb477df5",
+        "Question": "<p>Which of the following statement is false about management of perioperative beta-blocker ?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Patient on chronic beta-blocker therapy are at risk of ischemia with withdrawal</p>",
+                "value": 1,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>The dose of beta-blocker should be closely regulated throughout the perioperative period to maintain BP and HR</p>",
+                "value": 2,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>In patients predisposed to systolic heart failure initiate beta-blocker prior to urgent surgery</p>",
+                "value": 3,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Beta 1 cardioselective blocker are preferred agent</p>",
+                "value": 4,
+                "imgUrl": "",
+                "upload": false
+            }
+        ],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 1,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    },
+    {
+        "uuid": "46158d85-f8e3-4c4e-82c1-35a60250c12c",
+        "Question": "<p>Which of the following statement false about patient on tricyclic antidepressant</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Cyclic antidepressants can amplify the systemic pressor effects of norepinephrine and epinephrine; however, use with epinephrine-containing local anesthesia is generally safe.</p>",
+                "value": 1,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Use with atropine or scopolamine may increase postoperative confusion.</p>",
+                "value": 2,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Due to additive serotoninergic effects, use with tramadol and meperidine is not recommended.</p>",
+                "value": 3,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Discontinuation of cyclic agents throughout the perioperative period, in particular for patients on high doses without cardiac disease.</p>",
+                "value": 4,
+                "imgUrl": "",
+                "upload": false
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 2,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    },
+    {
+        "uuid": "762e85f2-7439-4d8c-9796-e056760a885b",
+        "Question": "<p>A 78-year-old patient with Parkinson disease undergoes a cataract operation under general anesthesia. In the recovery room, the patient has two episodes of emesis and complains of severe nausea. Which of the following antiemetics would be the best choice for treatment of nausea in this\npatient?\n\nDroperidol\n\nPromethazine\n\nOndansetron\n\nMetoclopramide</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 3,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    },
+    {
+        "uuid": "7fd31a2f-ecd4-475d-8052-bf0877792876",
+        "Question": "<p>Which of the following is the primary mechanism of action for Propofol?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>NMDA receptor antagonist</p>",
+                "value": 1,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>GABA receptor agonist</p>",
+                "value": 2,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Alpha-2 adrenergic receptor agonist</p>",
+                "value": 3,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Dopamine receptor antagonist \n\n\nAns. B\n\n\n\n\n\n\n\n\n\nThe rate of induction of anesthesia with isoflurane would be slower than expected in patients</p>",
+                "value": 4,
+                "imgUrl": "",
+                "upload": false
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 4,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    },
+    {
+        "uuid": "9acb2251-65dc-418a-a79a-9fb42250fb2f",
+        "Question": "<p>25 MAC sevoflurane anesthesia, wake-up would be\n\nThe same as 2 hours of isoflurane anesthesia\n\nThe same as 2 hours of sevoflurane anesthesia\n\nLess than 2 hours of isoflurane anesthesia, but greater than 2 hours of sevoflurane\n\nGreater than 2 hours of isoflurane anesthesia</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 5,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    },
+    {
+        "uuid": "6c35e5a7-7c71-4327-9f1a-47ebe66ebd92",
+        "Question": "<p>A 70-year-old male with nonvalvular atrial fibrillation, diabetes, and hypertension (CHA2DS2-VASc score = 3) receiving dabigatran who requires a colon resection for cancer; kidney function is normal. This patient has a moderate thrombotic risk and a high bleeding risk.\nOmit dabigatran for two days before the procedure;No bridging,resume dabigatran on postoperative day 2 or 3, can use prophylactic-dose LMW heparin for VTE prophylaxis for the first two to three postoperative days.\nOmit dabigatran for four days before the procedure;No bridging, resume dabigatran on postoperative day 2 or 3, can use prophylactic-dose LMW heparin for VTE prophylaxis for the first two to three postoperative days.\nOmit dabigatran for two days before the procedure; bridging with LMWH, resume dabigatran on postoperative day 2\nor 3, can use prophylactic-dose LMW heparin for VTE prophylaxis for the first two to three postoperative days.\n\nOmit dabigatran for four days before the procedure; bridging with LMWH, resume dabigatran on postoperative day 2 or 3, can use prophylactic-dose LMW heparin for VTE prophylaxis for the first two to three postoperative days.</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 6,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    },
+    {
+        "uuid": "2cce4e22-4b25-4670-a7a9-4d801b364a2e",
+        "Question": "<p>A 55-year-old male with an unprovoked DVT four months ago, receiving apixaban 5 mg twice daily, who requires a colonoscopy because of a history of multiple premalignant colorectal polyps; kidney function is normal. This patient will undergo a colonoscopy and likely repeat polypectomy and is characterized as having a high thrombotic risk. Although most colonoscopy procedures would be classified as low bleeding risk, in this specific case a high bleeding risk is assumed because of the likely need for polypectomy.\nOmit apixaban two days prior, no bridging start apixaban 48 hrs after surgery\n\nOmit apixaban one days prior, no bridging start apixaban 48 hrs after surgery\n\nOmit apixaban two days prior, bridging with Unfractionated heparin; start apixaban 48 hrs after\nsurgery\n\nOmit apixaban two days prior, no bridging start apixaban 24 hrs after surgery</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 7,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    },
+    {
+        "uuid": "f7eac98a-07ee-45e0-b2db-ea0ab26cc11a",
+        "Question": "<p>A 68-year-old female with nonvalvular atrial fibrillation, hypertension, and heart failure (CHA2DS2- VASc score = 4), receiving rivaroxaban 15 mg daily in the morning, requires a dental cleaning and two dental extractions; creatinine clearance (CrCl) is 35 mL/min. This patient has a moderate thrombotic risk and a low bleeding risk. Which is correct plan for her</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Omit rivaroxan on the day of surgery, give tranexamic acid mouthwash before procedure, resume rivaroxaban immediately after the procedure.</p>",
+                "value": 1,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Omit rivaroxan on the day of surgery, give tranexamic acid mouthwash before procedure, resume\nrivaroxaban 24 hrs after the procedure.</p>",
+                "value": 2,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Omit rivaroxan 24hrs prior to surgery, give tranexamic acid mouthwash before procedure, resume\nrivaroxaban immediately after the procedure.</p>",
+                "value": 3,
+                "imgUrl": "",
+                "upload": false
+            },
+            {
+                "name": "<p>Omit rivaroxan 24hrs prior to surgery, give tranexamic acid mouthwash before procedure, resume rivaroxaban 24hrs after the procedure.</p>",
+                "value": 4,
+                "imgUrl": "",
+                "upload": false
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 8,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    },
+    {
+        "uuid": "2fe8dad3-6915-4752-b9b5-b032013f7953",
+        "Question": "<p>Which patient population requires the most careful consideration before receiving intravenous dexamethasone?\nPatients with chronic hypertension\n\nPatients with well-controlled diabetes mellitus\n\nPatients with severe, brittle diabetes or active infection\n\nPatients undergoing orthopedic surgery</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "previous_apperance": "",
+        "perals": [],
+        "tags": null,
+        "questionId": "",
+        "flags": {
+            "pro": false,
+            "editable": true,
+            "qBank": true,
+            "active": true,
+            "testSeries": true,
+            "paid": true
+        },
+        "testSeries": null,
+        "Question_order": 9,
+        "syllabus": [
+            "61c57dceb818531a54ae978d"
+        ],
+        "math_library": "no",
+        "description_image": "",
+        "createdOn": "2026-03-11T09:02:53.216Z",
+        "createdBy": {
+            "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
+            "name": "Akhil"
+        },
+        "modifiedOn": null
+    }
+]

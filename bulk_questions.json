@@ -1,0 +1,1626 @@
+[
+    {
+        "uuid": "a68f3292-4183-4e4a-81be-2bea0f40eab9",
+        "Question": "<p>1. Which of the following statement is false about management of perioperative beta-blocker ?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Patient on chronic beta-blocker therapy are at risk of ischemia with withdrawal</p>",
+                "value": 1
+            },
+            {
+                "name": "<p>The dose of beta-blocker should be closely regulated throughout the perioperative period to maintain BP and HR</p>",
+                "value": 2
+            },
+            {
+                "name": "<p>In patients predisposed to systolic heart failure initiate beta-blocker prior to urgent surgery</p>",
+                "value": 3
+            },
+            {
+                "name": "<p>Beta 1 cardioselective blocker are preferred agent</p>",
+                "value": 4
+            }
+        ],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 1
+    },
+    {
+        "uuid": "4b76eef0-14a7-4199-9e2c-ddfb86df7b93",
+        "Question": "<p>Total intravenous anaesthesia (TIVA) in children Which one of the statements given below is true regarding the principles and use of TIVA in children?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 2
+    },
+    {
+        "uuid": "f7c4a73f-cc2e-4c84-8f9d-56cb76586d03",
+        "Question": "<p>Which of the pulmonary drugs should be discontinued evening before surgery?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 3
+    },
+    {
+        "uuid": "57623539-2ebc-4d85-8e23-b63c65ab906a",
+        "Question": "<p>Which of the following drugs cross placental barrier rapidly ??</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 4
+    },
+    {
+        "uuid": "8b152da3-4d18-4b2d-8361-d7e619408f35",
+        "Question": "<p>Which of the following agents maintain cerebral autoregulation??</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 5
+    },
+    {
+        "uuid": "05ffb840-45ff-4ce3-b503-56c510fba74f",
+        "Question": "<p>Perioperative ischemic evaluation (POISE) trials which is false statement regarding the trial ?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 6
+    },
+    {
+        "uuid": "1c0065b9-a922-4743-a729-a0ca721d1b0c",
+        "Question": "<p>7. Which of the following statement false about patient on tricyclic antidepressant</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Cyclic antidepressants can amplify the systemic pressor effects of norepinephrine and epinephrine; however, use with epinephrine-containing local anesthesia is generally safe.</p>",
+                "value": 1
+            },
+            {
+                "name": "<p>Use with atropine or scopolamine may increase postoperative confusion.</p>",
+                "value": 2
+            },
+            {
+                "name": "<p>Due to additive serotoninergic effects, use with tramadol and meperidine is not recommended.</p>",
+                "value": 3
+            },
+            {
+                "name": "<p>Discontinuation of cyclic agents throughout the perioperative period, in particular for patients on high doses without cardiac disease.</p>",
+                "value": 4
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 7
+    },
+    {
+        "uuid": "15a5ec3c-c65f-4f95-9d2b-29bdd22de6b8",
+        "Question": "<p>Local anaesthetic agents ALL of the following are true except regarding the pharmacokinetic properties of specific local anaesthetic agents?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": null
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 8
+    },
+    {
+        "uuid": "bff0a068-acde-43aa-a894-ab6a8327c8d9",
+        "Question": "<p>Which of the following factors decrease the minimum alveolar concentration of a volatile agent?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 9
+    },
+    {
+        "uuid": "3df87bef-a103-4f4a-a0c9-1d95aead4102",
+        "Question": "<p>Which of the following are true regarding the uses and complications of intraosseous cannulation when compared to venous cannulation?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 10
+    },
+    {
+        "uuid": "d2a13480-6f0f-4123-abe1-f626eb65e05b",
+        "Question": "<p>A 28-year-old female complains of severe headaches and palpitations. She is posted for a septoplasty. On examination at the pre-assessment clinic she is hypertensive with BP of 190/110mmHg and her ECG shows tachycardia with a heartrate of 120bpm.She has no other previous medical history. She also complains of some non-specific symptoms like intermittent abdominal pains and lethargy. Which of the following are true about the investigations and further management of this patient?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 11
+    },
+    {
+        "uuid": "1641a456-0014-448d-a6ba-1967f3f77c65",
+        "Question": "<p>Which of the following are true about drugs and their volume of distribution (Vd) ?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 12
+    },
+    {
+        "uuid": "b50d8bdc-f6ea-4e77-872d-e9b4166fd569",
+        "Question": "<p>Which factor increases the volume of distribution 𝑉𝑑 of a drug?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 13
+    },
+    {
+        "uuid": "f41c53fa-219c-41b5-a98c-2ec886f479a6",
+        "Question": "<p>The \"first-pass effect\" is most pronounced with which route of administration?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 14
+    },
+    {
+        "uuid": "ac464e6d-a6be-4fda-a4bf-df17f957147c",
+        "Question": "<p>single bolus dose of propofol?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 15
+    },
+    {
+        "uuid": "5d86a35c-07b6-4d07-906f-337d2c7a6331",
+        "Question": "<p>Which of the following describes \"Zero-Order\" kinetics?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 16
+    },
+    {
+        "uuid": "928010b0-9bdb-4f28-bff9-e35a7e18c0af",
+        "Question": "<p>Volume of Distribution (Vd) is calculated by which formula?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 17
+    },
+    {
+        "uuid": "57d9c624-f0b1-4956-a87a-992a746ff113",
+        "Question": "<p>What is the mechanism of action of Sugammadex?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 18
+    },
+    {
+        "uuid": "bb53730c-2e3c-4592-9bc5-2223762ed0ab",
+        "Question": "<p>within how many hours of opening the ampule?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 19
+    },
+    {
+        "uuid": "0b976a26-d8a4-49af-91f6-c561d75bb9d5",
+        "Question": "<p>Which of the following is NOT a typical feature of Propofol Infusion Syndrome?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 20
+    },
+    {
+        "uuid": "99a8d225-c745-46b1-8905-740042d7a9a1",
+        "Question": "<p>patient?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": null
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 21
+    },
+    {
+        "uuid": "d554a271-b988-4d27-8dd9-6c39cb8dad27",
+        "Question": "<p>blockade with succinylcholine?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 22
+    },
+    {
+        "uuid": "b472e18d-c93e-43df-8ade-6764b256a51b",
+        "Question": "<p>Sedation with which of the following drugs is most likely to resemble normal sleep?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 23
+    },
+    {
+        "uuid": "a0028baf-1d91-4f35-95b4-311f06315cee",
+        "Question": "<p>Which of the following intravenous anesthetics is converted from a water soluble to a lipid- soluble drug after exposure to the bloodstream?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 24
+    },
+    {
+        "uuid": "f8ddffe5-755e-4746-8a3a-993c984605ee",
+        "Question": "<p>A 33-year-old, 70-kg patient is brought to the operating room for resection of an anterior pituitary prolactin-secreting tumor. Anesthesia is induced with sevoflurane, nitrous oxide, and oxygen. The patient is intubated, and nitrous oxide is discontinued. Anesthesia is maintained with 1.2 minimum alveolar concentration (MAC) sevoflurane in oxygen. The surgeon plans to inject epinephrine into the nasal mucosa to minimize bleeding. What is the maximum volume of a 1:100,000 epinephrine solution that can be administered safely to this patient without producing ventricular arrhythmias?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 25
+    },
+    {
+        "uuid": "b9f57fdd-7878-40fc-96d9-fd7a062ee320",
+        "Question": "<p>Which of the following muscle relaxants is eliminated the most by renal excretion?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 26
+    },
+    {
+        "uuid": "754422db-479e-4fba-b860-19ddb37bdaac",
+        "Question": "<p>A 78-year-old patient with Parkinson disease undergoes a cataract operation under general anesthesia. In the recovery room, the patient has two episodes of emesis and complains of severe nausea. Which of the following antiemetics would be the best choice for treatment of nausea in this patient?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Droperidol B. Promethazine C. Ondansetron D. Metoclopramide</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 27
+    },
+    {
+        "uuid": "30e93e13-86af-4bc1-a48c-8dc3dd299122",
+        "Question": "<p>Which of the following drugs is capable of crossing the blood-brain barrier?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 28
+    },
+    {
+        "uuid": "fb92d325-e34f-4a58-b7f3-49024c186c49",
+        "Question": "<p>aspartate (NMDA) receptors?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Propofol B. Midazolam C. Etomidate D. Ketamine</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 29
+    },
+    {
+        "uuid": "19032e8d-a0ed-4adc-a6ac-996297c1e791",
+        "Question": "<p>Which of the following opioid-receptor agonists has anticholinergic properties?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Morphine B. Hydromorphone C. Sufentanil D. Meperidine</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 30
+    },
+    {
+        "uuid": "6c954438-3ab9-498f-96c0-09b358b2f1a4",
+        "Question": "<p>Which of the antibiotics below does NOT augment neuromuscular blockade?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Clindamycin B. Neomycin C. Streptomycin D. Erythromycin</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 31
+    },
+    {
+        "uuid": "bdcbbbd2-953c-4de5-b343-cba9b16f5681",
+        "Question": "<p>100 mg succinylcholine is administered to a 70-kg anesthetized man before intubation. The patient remains paralyzed for 20 minutes. Which of the parameters below is NOT consistent with this finding?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 32
+    },
+    {
+        "uuid": "d153e90b-c719-4e6b-9852-6b902f43cb15",
+        "Question": "<p>In which of the following situations is succinylcholine most likely to cause severe hyperkalemia?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": null
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 33
+    },
+    {
+        "uuid": "5aec5e0b-3a3e-4889-8608-88517f55d2b3",
+        "Question": "<p>arthroscopy under general anesthesia. Which of the following drugs is contraindicated in this patient?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 34
+    },
+    {
+        "uuid": "6b3cbbf6-616e-4fd2-bc43-c1cb2643bba2",
+        "Question": "<p>A narcotic infusion is initiated in a patient without a bolus (loading dose). Of the following drugs, which would reach steady state after 2 hours or less of continuous infusion (fentanyl, remifentanil, alfentanil, and morphine)?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>All of these B. Remifentanil and alfentanil C. Alfentanil only D. Remifentanil only</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 35
+    },
+    {
+        "uuid": "ce4dda1d-74ef-4edb-ae17-18c8f8a21c1b",
+        "Question": "<p>acute hypokalemia is correct?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 36
+    },
+    {
+        "uuid": "3f9a70e2-4d6e-4cf2-a3e5-833b44f0b39b",
+        "Question": "<p>A 25-year-old woman undergoes thyroidectomy under general anesthesia. Ondansetron 4 mg IV is administered as nausea prophylaxis. She complains of nausea in the recovery room. Which of the following agents is LEAST likely to be of benefit to her for treatment (rescue) of postoperative nausea and vomiting (PONV)?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Aprepitant B. Granisetron C. Promethazine D. Droperidol</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 37
+    },
+    {
+        "uuid": "74195085-96f6-4e2e-a67b-a614ea47280d",
+        "Question": "<p>Which of the commonly used drugs below is NOT metabolized by nonspecific esterases?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Propofol B. Esmolol C. Atracurium D. Remifentanil</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 38
+    },
+    {
+        "uuid": "fa71793e-3d51-43eb-a5a4-ba73d611dbbf",
+        "Question": "<p>Succinylcholine is contraindicated for routine tracheal intubation in children because of an increased incidence of which of the following side effects?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Hyperkalemia B. Malignant hyperthermia C. Masseter spasm D. Sinus bradycardia</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 39
+    },
+    {
+        "uuid": "b08c920b-4242-4b69-934d-4c97f982b3a7",
+        "Question": "<p>disease?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Bromocriptine B. Trihexyphenidyl (Artane) C. Selegiline (Eldepryl) D. Amantadine (Symmetrel)</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 40
+    },
+    {
+        "uuid": "2fc207b6-d75a-46eb-85a4-b00268831b9b",
+        "Question": "<p>Which of the following muscle relaxants inhibits the reuptake of norepinephrine by the adrenergic nerves?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Pancuronium B. Vecuronium C. Rocuronium D. Atracurium</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 41
+    },
+    {
+        "uuid": "2574788e-8495-420b-9bd9-923e1e2c4d6a",
+        "Question": "<p>A 65-year-old patient is admitted for right upper quadrant pain. Acute cholecystitis is diagnosed, and laparoscopic cholecystectomy planned. The patient has no major medical problems other than type 2 diabetes, for which she takes metformin, and depression, for which she takes paroxetine (selective serotonin reuptake inhibitor [SSRI]). Which of the following best describes the rationale for discontinuation of metformin 48 hours before surgery?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Risk of metabolic acidosis B. Risk of hypoglycemia C. Risk of serotonin syndrome D. None of the above</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 42
+    },
+    {
+        "uuid": "098615e9-4edc-4d60-b66f-466a6369b1a0",
+        "Question": "<p>Respiratory depression produced by which of the following analgesics is not readily reversed by administration of naloxone?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Meperidine B. Methadone C. Hydromorphone D. Buprenorphine</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 43
+    },
+    {
+        "uuid": "08d0a088-c7b1-4139-9416-c2106f8463a6",
+        "Question": "<p>The action of succinylcholine at the neuromuscular junction is terminated by which mechanism?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Hydrolysis by pseudocholinesterase B. Diffusion into extracellular fluid C. Reuptake into nerve tissue D. Reuptake into muscle tissue</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 44
+    },
+    {
+        "uuid": "204d48a1-77f8-4b8b-b211-0ed2b486dd23",
+        "Question": "<p>Which of the following features of chronic morphine therapy is NOT subject to tolerance?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Analgesia B. Respiratory depression C. Constipation D. All are subject to tolerance</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 45
+    },
+    {
+        "uuid": "3d838d95-8c02-4dc5-82fe-a0f891fdca26",
+        "Question": "<p>Which of the following statements concerning midazolam is FALSE ?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Midazolam has greater amnestic than sedative properties</p>",
+                "value": 1
+            },
+            {
+                "name": "<p>Its breakdown is inhibited by cimetidine</p>",
+                "value": 2
+            },
+            {
+                "name": "<p>It produces retrograde amnesia</p>",
+                "value": 3
+            },
+            {
+                "name": "<p>It facilitates the actions of the inhibitory neurotransmitter γ aminobutyric acid (GABA) in the</p>",
+                "value": 4
+            }
+        ],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 46
+    },
+    {
+        "uuid": "9f8f17e9-e0ef-410a-8317-a49d7742a227",
+        "Question": "<p>An oral surgeon is about to perform a full mouth extraction on a 70-kg, 63 year-old man under conscious sedation. What is the maximum dose of lidocaine with epinephrine that he can safely infiltrate?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>200 mg B. 300 mg C. 400 mg D. 500 mg</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 47
+    },
+    {
+        "uuid": "24d53e47-391c-4d9e-b9f7-a7c199a83003",
+        "Question": "<p>TRUE ?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 48
+    },
+    {
+        "uuid": "3be9d854-3ce7-4293-8561-0f92fdd936d2",
+        "Question": "<p>The duration of action of remifentanil is attributable to which mode of metabolism?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 49
+    },
+    {
+        "uuid": "857f6141-5d5c-49bf-83cc-1ce8abf5309e",
+        "Question": "<p>Pain at the intravenous site is LEAST with which IV drug?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Diazepam B. Etomidate C. Ketamine D. Propofol</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 50
+    },
+    {
+        "uuid": "91a43e7a-1a2d-4c72-b326-6a693d94b14c",
+        "Question": "<p>The minimum alveolar concentration (MAC) is highest in neonates (0-30 days old) versus other age groups with which of the following?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 51
+    },
+    {
+        "uuid": "19ea41a2-813e-4602-a59c-a58bd7031166",
+        "Question": "<p>Which of the following can NOT be considered an advantage of low-flow anesthesia?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 52
+    },
+    {
+        "uuid": "bc36b8a9-6211-4979-b45d-5a751de3e313",
+        "Question": "<p>Which of the following volatile anesthetics decreases systemic vascular resistance?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Sevoflurane B. Isoflurane C. Desflurane D. All of the above</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 53
+    },
+    {
+        "uuid": "2f02e1e7-c464-4164-a413-972c62549a2a",
+        "Question": "<p>With which of the following inhalational agents is cardiac output moderately increased?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>N2O B. Sevoflurane C. Desflurane D. Isoflurane</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 54
+    },
+    {
+        "uuid": "2eca4e66-a3c2-43f7-8fc4-4344304c50b6",
+        "Question": "<p>Abrupt and large increases in the delivered concentration of which of the following inhalational anesthetics may produce transient increases in systemic blood pressure and heart rate?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Desflurane B. Isoflurane C. Sevoflurane D. N2 O</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 55
+    },
+    {
+        "uuid": "6f05bd98-2804-4cf2-ae27-f1162e2ec925",
+        "Question": "<p>Discontinuation of 1 MAC of which volatile anesthetic followed by immediate introduction of 1 MAC of which second volatile anesthetic would temporarily result in the greatest combined anesthetic potency?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 56
+    },
+    {
+        "uuid": "019fdd7c-9f11-467d-aa97-067353e35373",
+        "Question": "<p>Cardiogenic shock has the greatest impact on the rate of increase in Fa /Fi for which of the following volatile anesthetics?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Isoflurane B. Desflurane C. Sevoflurane D. N2 O</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 57
+    },
+    {
+        "uuid": "cde3cf83-6ded-4e8c-9149-5f0a6ec1f1f5",
+        "Question": "<p>The vessel-rich group receives what percent of the cardiac output?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>45% B. 60% C. 75% D. 90%</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 58
+    },
+    {
+        "uuid": "7c244513-e49e-4569-8b34-732229e32cab",
+        "Question": "<p>What percent desflurane is present in the vaporizing chamber of a desflurane vaporizer (pressurized to 1500 mm Hg and heated to 23° C)?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Nearly 100% B. 85% C. 65% D. 45%</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 59
+    },
+    {
+        "uuid": "833661f8-b3e7-481d-817c-0c40e3d31ae4",
+        "Question": "<p>How would a right mainstem intubation affect the rate of increase in arterial partial pressure of volatile anesthetics?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 60
+    },
+    {
+        "uuid": "4ae9d715-0be0-45d7-97b8-31c4c7366177",
+        "Question": "<p>During a breast biopsy with the patient under general anesthesia, the end-tidal carbon dioxide (ETCO2) is 25 mm Hg on infrared spectrometer. Which of the following could NOT account for these findings?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Mainstem intubation B. Enormous dead space C. Incipient cardiac arrest D. Overventilation</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 61
+    },
+    {
+        "uuid": "c82c026b-467e-4e64-927f-562cc124f9f8",
+        "Question": "<p>Which of the following MOST closely determines anesthetic effect?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 62
+    },
+    {
+        "uuid": "f6df2464-b270-40d1-acd7-07c4acf64fef",
+        "Question": "<p>107.   Which of the following is the primary mechanism of action for Propofol?\nA) NMDA receptor antagonist\nB) GABA receptor agonist\nC) Alpha-2 adrenergic receptor agonist\nD) Dopamine receptor antagonist</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 63
+    },
+    {
+        "uuid": "5af37e64-9c10-4be4-8268-22ef622ede0f",
+        "Question": "<p>Which of the antihypertensives below reduces MAC?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 64
+    },
+    {
+        "uuid": "b3167c56-30f0-4280-a15f-3ff80ffe6b87",
+        "Question": "<p>A left-to-right tissue shunt, such as arteriovenous fistula, physiologically most resembles which of the following?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 65
+    },
+    {
+        "uuid": "f11ccd5f-e50d-4f6d-af60-49990e60fc08",
+        "Question": "<p>Smokers are MOST likely to show a mild but transient increase in airway resistance after intubation and general anesthesia with which of the following?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Isoflurane B. Sevoflurane C. Halothane D. Desflurane</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 66
+    },
+    {
+        "uuid": "87b93bbb-ea54-4fb8-8be3-66ff5cc02f30",
+        "Question": "<p>If a patient is anesthetized with 6% desflurane in a hyperbaric chamber at 1 atm and the pressure is increased to 2 atm, the desflurane dial should be set to which setting if the anesthesia provider wishes to maintain the anesthetic at the same level?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>3% B. 6% C. 12% D. Cannot be determined without knowledge of Fio 2</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 67
+    },
+    {
+        "uuid": "6f7584e1-9757-45e0-bb8f-965c5f53d84f",
+        "Question": "<p>Which of the following organs is NOT considered a member of the vessel-rich group?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Lungs B. Brain C. Heart D. Kidney</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 68
+    },
+    {
+        "uuid": "f975b860-281d-4f58-bc67-a2dec545e62f",
+        "Question": "<p>Which of the following characteristics of inhaled anesthetics most closely correlates with recovery from inhaled anesthesia?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 69
+    },
+    {
+        "uuid": "9161d78d-727f-490a-aec3-0b18157a3272",
+        "Question": "<p>An unconscious, spontaneously breathing patient is brought to the operating room (OR) from the intensive care unit for wound débridement. Which of the following maneuvers would serve to slow induction of inhalational anesthesia through the tracheostomy?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 70
+    },
+    {
+        "uuid": "cef059c0-cb2d-4d6c-a93d-2cc1b27b39aa",
+        "Question": "<p>1.25 MAC sevoflurane anesthesia, wake-up would be</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": null
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 71
+    },
+    {
+        "uuid": "efbfb99e-85fc-42a4-8785-d94f99c9e945",
+        "Question": "<p>Which inhalational anesthetic is known to have a pleasant odor and is often preferred for inhalational induction in pediatric patients?\na) Isoflurane\nb) Desflurane\nc) Sevoflurane\nd) Nitrous Oxide</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 72
+    },
+    {
+        "uuid": "259cfc6a-6c66-4e22-bba4-0c0c5a3b32d3",
+        "Question": "<p>Which of the following factors lowers MAC for volatile anesthetics?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Serum sodium 151 mEq/L B. Amphetamine abuse C. Hypothermia C D. Chronic ethanol ingestion</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 73
+    },
+    {
+        "uuid": "4086f624-1e11-4785-8f3a-7dd65e58e03c",
+        "Question": "<p>Which of the following volatile anesthetics is unique in containing preservative?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 74
+    },
+    {
+        "uuid": "f2bac41a-0244-493e-bef1-8f49453cbeb8",
+        "Question": "<p>If the alveolar-to-venous partial pressure difference of a volatile anesthetic (PA − Pv) is positive (i.e., PA > Pv) and the arterial-to-venous partial pressure difference (Pa − Pv) is negative (i.e., Pv > Pa), which of the following scenarios is MOST likely to be true?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 75
+    },
+    {
+        "uuid": "db698361-3fcf-467c-962b-1bfbc8cbe056",
+        "Question": "<p>Anesthetic loss to the plastic and rubber components of the anesthetic circuit, hindering achievement of an adequate inspired concentration, is a factor with which of the following anesthetics?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 76
+    },
+    {
+        "uuid": "6402a924-0ebb-4b48-bd9b-4e17f2d5297e",
+        "Question": "<p>Which of the components below is NOT considered in the process of “washin” of the anesthesia circuit at the onset of administration?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 77
+    },
+    {
+        "uuid": "dc4ad65b-dd49-479c-b9f4-e5de6c41396a",
+        "Question": "<p>Which of the following maneuvers would NOT increase the rate of an inhalation induction?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 78
+    },
+    {
+        "uuid": "745522e2-b1ba-4fb1-b50a-196bd2b5d8c6",
+        "Question": "<p>Which of the following anesthetics would undergo 90% elimination the most rapidly after a 6- hour Whipple procedure under 1 MAC for the duration of the operation?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 79
+    },
+    {
+        "uuid": "cf2d7a0a-fde2-457c-b71e-103a4a026dd9",
+        "Question": "<p>Which of the following characteristics of volatile anesthetics is necessary for calculation of the time constant?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 80
+    },
+    {
+        "uuid": "7c14f343-f513-441c-bc01-a31d3284b443",
+        "Question": "<p>Which of the following findings suggests current use of cocaine in a patient undergoing preoperative evaluation?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Bradycardia B. Hypertension C. Pinpoint pupils D. Hypothermia</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 81
+    },
+    {
+        "uuid": "41ab4451-5339-47f3-ae2a-a12fba40b140",
+        "Question": "<p>Which of the following local anesthetics is an ester?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Lidocaine B. Prilocaine C. Mepivacaine D. Cocaine</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 82
+    },
+    {
+        "uuid": "8188babd-2ad7-429f-a472-de9b42be144e",
+        "Question": "<p>Which of the statements among the following is true?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 83
+    },
+    {
+        "uuid": "9008cef9-4f59-483b-b5c4-5af1d678cde2",
+        "Question": "<p>Which of the following statements about the local anesthetics is false?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 84
+    },
+    {
+        "uuid": "688526be-7f7d-4efb-806e-94e1604f0bc3",
+        "Question": "<p>Which is the correct expected duration of anesthesia after infiltration with the following local anesthetics?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 85
+    },
+    {
+        "uuid": "22c47871-abcd-43dd-97b6-b96f746e8950",
+        "Question": "<p>Use of which of the following local anesthetics for spinal anesthesia is controversial?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Ropivacaine B. Bupivacaine C. Tetracaine D. Lidocaine</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 86
+    },
+    {
+        "uuid": "289626c1-6c29-4d68-aefd-2a10ce15d560",
+        "Question": "<p>During placement of an interscalene block utilizing 0.5% bupivacaine, a 62 year-old patient suddenly starts experiencing seizures and loses consciousness. Which of the following statements regarding local anesthetic toxicity is correct?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 87
+    },
+    {
+        "uuid": "265a2c2f-b66e-4e06-8556-a2e8909db6bc",
+        "Question": "<p>During placement of an interscalene block utilizing 0.5% bupivacaine, a 62-year-old patient suddenly starts experiencing seizures and loses consciousness. Which of the following statements is false?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 88
+    },
+    {
+        "uuid": "bbbaf208-3f2a-400b-94ff-6a9d3504ddd5",
+        "Question": "<p>loses consciousness and hemodynamically unstable. Which of the following is most probable diagnosis?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 89
+    },
+    {
+        "uuid": "64ef5ce4-42ae-40ad-b8b5-5e2e8330fe64",
+        "Question": "<p>Which of the following muscle relaxants is eliminated mostly by the kidneys?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Rocuronium B. Succinylcholine C. Vecuronium D. Pancuronium</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 90
+    },
+    {
+        "uuid": "4b7283be-712f-4c12-b693-0a1c4457c78b",
+        "Question": "<p>A 22-year-old college athlete with a history of prolonged QT syndrome presents for an inguinal hernia repair. Which of the following agents would be least likely to further lengthen the QT interval?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Ondansetron B. Metoclopramide C. Succinylcholine D. Propofol</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 91
+    },
+    {
+        "uuid": "091e17a2-1fa9-44c1-8f97-5e1ebf1f6731",
+        "Question": "<p>165. Regarding the pharmacokinetics of dexamethasone in anesthesia, which statement is true?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 92
+    },
+    {
+        "uuid": "f3a9330b-1d84-44e9-bf41-b5f2e11d3fbd",
+        "Question": "<p>Which of the following statements concerning naloxone is true?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 93
+    },
+    {
+        "uuid": "cdd301d9-6f2a-4304-a10c-9da6ffef36d8",
+        "Question": "<p>Which of the following best explains this phenomenon?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 94
+    },
+    {
+        "uuid": "5067da51-5ddc-4b10-b332-bf2085dffca8",
+        "Question": "<p>Which of the following drugs decreases lower esophageal sphincter tone?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Succinylcholine B. Glycopyrrolate C. Metoclopramide D. Neostigmine</p>",
+                "value": 1
+            }
+        ],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 95
+    },
+    {
+        "uuid": "2d49abfb-267a-45ac-bd27-da93b5a00530",
+        "Question": "<p>Which is false statement about perioperative antipsychotic agents management ??</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 96
+    },
+    {
+        "uuid": "f2f68bb1-f1eb-41ee-8d5f-c87a764e4426",
+        "Question": "<p>A 48 yrs old male on chronic colchicine therapy and allopurinol for gout management posted for surgery. Which is false statement regarding perioperative medication management?</p>",
+        "type": "SINGLE",
+        "options": [
+            {
+                "name": "<p>Surgery is known to precipitate acute gouty arthropathy</p>",
+                "value": 1
+            },
+            {
+                "name": "<p>Colchicine can cause muscle weakness and polyneuropathy in the setting of renal impairment or</p>",
+                "value": 2
+            },
+            {
+                "name": "<p>Allopurinol can be continued</p>",
+                "value": 3
+            },
+            {
+                "name": "<p>Last dose of Colchicine should be stopped 3 days before surgery</p>",
+                "value": 4
+            }
+        ],
+        "Answer": {
+            "options": 4
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 97
+    },
+    {
+        "uuid": "45c662b4-476c-4548-8598-7a4cf860b825",
+        "Question": "<p>Which of the following is an example of \"non-organ\" clearance used for drugs like Atracurium?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 98
+    },
+    {
+        "uuid": "a7d2c4b1-0099-4ee3-a9ac-f6ad87a92fce",
+        "Question": "<p>Which term describes the concentration of an inhalational anesthetic at 1 atmosphere that prevents movement in 50% of patients in response to a noxious stimulus?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 99
+    },
+    {
+        "uuid": "28ac022c-38c8-4220-97e4-7442d9253167",
+        "Question": "<p>A patient with renal failure who underwent surgery using a large dose of morphine is not waking up. What is the most likely reason?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 100
+    },
+    {
+        "uuid": "4e7c6c88-8bbf-4724-a05b-7a1a69840a8d",
+        "Question": "<p>What is a key pharmacological cause of delayed awakening related to neuromuscular blockers?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 101
+    },
+    {
+        "uuid": "c67cc73a-168c-4ae0-bd04-66f8442d1cdd",
+        "Question": "<p>Which factor primarily determines the speed of recovery from a single bolus dose of thiopentone?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 102
+    },
+    {
+        "uuid": "1ca9a1b3-bc63-4ebe-bae2-f0f940dbe72b",
+        "Question": "<p>What is the mechanism of action for local anaesthetics like Bupivacaine?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 103
+    },
+    {
+        "uuid": "fd125eb7-cb55-46d1-ab7d-0916f2ada818",
+        "Question": "<p>Which drug is a specific alpha-2 antagonist that can reverse the effects of dexmedetomidine (though not currently FDA-approved for human use)?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 104
+    },
+    {
+        "uuid": "c2e86d91-6588-41e7-9b75-414053deff03",
+        "Question": "<p>What is the mechanism of action for the analgesic effect of clonidine when used intrathecally?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 1
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 105
+    },
+    {
+        "uuid": "d9724517-caa3-453c-8f05-534a219acb8c",
+        "Question": "<p>Which of the following is a primary, non-antiemetic benefit of dexamethasone in perioperative care?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 2
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 106
+    },
+    {
+        "uuid": "24e00af8-f365-4eb2-924c-734783d5c929",
+        "Question": "<p>200.Which patient population requires the most careful consideration before receiving intravenous dexamethasone?</p>",
+        "type": "SINGLE",
+        "options": [],
+        "Answer": {
+            "options": 3
+        },
+        "Question_image": "",
+        "description": "",
+        "difficulty": "MEDIUM",
+        "Question_order": 107
+    }
+]
