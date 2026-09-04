@@ -1,6 +1,6 @@
 [
     {
-        "uuid": "719f46b4-be92-4c69-9893-af66b1b20a55",
+        "uuid": "5cd28c24-dce6-4b18-b528-2a3670873b40",
         "Question": "<p>A 42-year-old woman presents to the surgical outpatient department with a 5-year history of prominent, tortuous veins over the medial aspect of her right lower limb. She reports a dull aching sensation and heaviness in the leg, particularly after standing for several hours at work. On examination, multiple dilated superficial veins are seen along the medial thigh and leg. There is no ulceration or significant edema. The patient is asked to lie supine, and her affected limb is elevated to allow the superficial veins to empty. The examiner then compresses the region of the saphenofemoral junction and asks the patient to stand. The veins remain collapsed initially but fill rapidly when the pressure over the junction is released. Which of the following clinical tests is being performed in this patient?</p>",
         "type": "SINGLE",
         "options": [
@@ -54,7 +54,7 @@
         ],
         "math_library": "no",
         "description_image": "",
-        "createdOn": "2026-08-31T14:43:07.657320Z",
+        "createdOn": "2026-09-04T08:08:05.901758Z",
         "createdBy": {
             "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
             "name": "Akhil"
@@ -62,7 +62,7 @@
         "modifiedOn": null
     },
     {
-        "uuid": "485b27ea-fb4e-4854-8065-57c95961cb9b",
+        "uuid": "c1b7c39f-8e64-4683-86e3-559bad8f8c9b",
         "Question": "<p>A 38-year-old man who works as a security guard presents with gradually increasing, tortuous veins over both lower limbs. His symptoms are mainly cosmetic, and he occasionally experiences mild heaviness after prolonged standing. On examination, there are clearly visible, palpable dilated veins measuring more than 3 mm in diameter when the patient is standing. There is no ankle edema, pigmentation, eczema, lipodermatosclerosis, or history of venous ulceration. The surgeon decides to document the patient's chronic venous disease using the CEAP clinical classification. Which CEAP clinical class best describes this patient's condition?</p>",
         "type": "SINGLE",
         "options": [
@@ -116,7 +116,7 @@
         ],
         "math_library": "no",
         "description_image": "",
-        "createdOn": "2026-08-31T14:43:07.657320Z",
+        "createdOn": "2026-09-04T08:08:05.901758Z",
         "createdBy": {
             "uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0",
             "name": "Akhil"

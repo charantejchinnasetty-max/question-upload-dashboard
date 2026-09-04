@@ -12,7 +12,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 
-from parser import parse_docx
+from parser import create_standard_docx, parse_docx
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
@@ -20,6 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent
 RUNTIME_DIR = Path(tempfile.gettempdir()) / "question-upload-dashboard" if os.environ.get("VERCEL") else BASE_DIR
 UPLOAD_DIR, GENERATED_DIR = RUNTIME_DIR / "uploads", RUNTIME_DIR / "generated"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True); GENERATED_DIR.mkdir(parents=True, exist_ok=True)
+MASTER_TEMPLATE = BASE_DIR / "static" / "samples" / "Question_Format_Sample.docx"
 HISTORY_FILE, ERROR_FILE = GENERATED_DIR / "upload_history.json", GENERATED_DIR / "error_questions.json"
 LOGIN_URL = "https://admin.errorfreetestseries.in/managebe/proxy/api/employee/employeeLogin"
 UPLOAD_URL = "https://admin.errorfreetestseries.in/managebe/proxy/api/questions/bulk/testQuestions"
@@ -90,13 +91,16 @@ def preview():
     file, subject = request.files.get("file"), request.form.get("subject")
     if not _valid_docx(file): return jsonify({"error": "Choose a valid .docx file."}), 400
     job_id, name = str(uuid.uuid4()), secure_filename(file.filename); path = UPLOAD_DIR / f"{job_id}_{name}"; file.save(path)
-    try: questions, errors = parse_docx(path, subject)
+    try: questions, errors, candidates, warnings = parse_docx(path, subject, image_dir=GENERATED_DIR / job_id / "images")
     except Exception as exc: path.unlink(missing_ok=True); return jsonify({"error": f"Could not read DOCX: {exc}"}), 400
     output_path = GENERATED_DIR / f"{Path(name).stem}.json"
-    _jobs[job_id] = {"questions": questions, "errors": errors, "subject": subject, "filename": name, "output_path": output_path}; _write(output_path, questions); _write(ERROR_FILE, errors)
+    standard_docx_path = GENERATED_DIR / f"{Path(name).stem}_standardized.docx"
+    try: create_standard_docx(candidates, standard_docx_path, MASTER_TEMPLATE)
+    except Exception as exc: return jsonify({"error": f"Could not create the standardized DOCX: {exc}"}), 500
+    _jobs[job_id] = {"questions": questions, "errors": errors, "subject": subject, "filename": name, "output_path": output_path, "standard_docx_path": standard_docx_path}; _write(output_path, questions); _write(ERROR_FILE, errors)
     record = {"id": job_id, "datetime": datetime.now(timezone.utc).isoformat(), "filename": name, "category": "", "test": "", "subject": subject or "", "total": len(questions), "uploaded": len(questions), "failed": len(errors), "status": "WARNING" if errors else "SUCCESS", "activity": "JSON generated", "errors": errors}
     history = _read(HISTORY_FILE, []); history.insert(0, record); _write(HISTORY_FILE, history)
-    return jsonify({"job_id": job_id, "count": len(questions), "errors": errors, "questions": questions, "output_filename": f"{Path(name).stem}.json"})
+    return jsonify({"job_id": job_id, "count": len(questions), "found": len(candidates), "warnings": warnings, "errors": errors, "questions": questions, "output_filename": f"{Path(name).stem}.json", "standard_docx_filename": f"{Path(name).stem}_standardized.docx"})
 
 @app.get("/download/<job_id>")
 def download_json(job_id):
@@ -104,6 +108,13 @@ def download_json(job_id):
     if not job or not job["output_path"].is_file(): return jsonify({"error": "Generated JSON file not found. Preview the DOCX again."}), 404
     output_name = f"{Path(job['filename']).stem}.json"
     return send_file(job["output_path"], as_attachment=True, download_name=output_name, mimetype="application/json")
+
+@app.get("/download-standard-docx/<job_id>")
+def download_standard_docx(job_id):
+    job = _jobs.get(job_id)
+    if not job or not job["standard_docx_path"].is_file(): return jsonify({"error": "Standardized DOCX not found. Preview the document again."}), 404
+    output_name = f"{Path(job['filename']).stem}_standardized.docx"
+    return send_file(job["standard_docx_path"], as_attachment=True, download_name=output_name, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
 @app.post("/upload")
 def upload():
@@ -114,7 +125,7 @@ def upload():
     else:
         file = request.files.get("file")
         if not _valid_docx(file) or not subject: return jsonify({"error": "A DOCX file and subject are required."}), 400
-        questions, errors = parse_docx(file, subject)
+        questions, errors, _, _ = parse_docx(file, subject)
     ts_uuid = category or os.environ.get("TS_UUID")
     if not ts_uuid or not test: return jsonify({"error": "Category and test are required for upload."}), 400
     if not questions: return jsonify({"error": "No valid questions were found.", "errors": errors}), 400
