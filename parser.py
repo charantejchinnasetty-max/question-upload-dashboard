@@ -10,7 +10,10 @@ from docx.table import Table
 from docx.text.paragraph import Paragraph
 from docx.shared import Inches
 
-QUESTION_RE = re.compile(r"^(?:question|ques|q)\s*(\d+)(?:\s*[:.)\-]\s*(.*)|\s*)$|^(\d+)\s*[.)]\s+(.+)$", re.I)
+# Accept a normal question header as well as labels such as
+# "Question 3 (Non-Clinical)".  The parenthetical label is metadata, not part
+# of the question text; the following paragraph remains the question text.
+QUESTION_RE = re.compile(r"^(?:question|ques|q)\s*(\d+)(?:\s*\([^)]*\))?(?:\s*[:.)\-]\s*(.*)|\s*)$|^(\d+)\s*[.)]\s+(.+)$", re.I)
 OPTION_RE = re.compile(r"^(?:option\s*)?([A-Ha-h]|[1-8])\s*[.)\]:\-]\s*(.+)$", re.I)
 ANSWER_RE = re.compile(r"^(?:(?:correct\s*)?(?:answer|ans)|correct\s*(?:option|choice)?|right\s*answer)\s*(?:is)?\s*[:\-]?\s*(?:option|choice)?\s*\(?\s*([A-Ha-h]|[1-8])\s*\)?(?:[.)\]:\-]|\b)", re.I)
 EXPLANATION_RE = re.compile(r"^(?:(?:brief|detailed)?\s*explanations?(?:\s+of\s+all\s+options)?|rationale|reason)\s*[:\-]?\s*(.*)$", re.I)
@@ -25,6 +28,19 @@ OPTIONS_HEADER_RE = re.compile(r"^(?:options?|choices?)\s*[:\-]?\s*(.*)$", re.I)
 
 def _clean(value):
     return re.sub(r"\s+", " ", value.replace("\xa0", " ")).strip()
+
+
+def _plain_docx_markup(value):
+    """Remove Word-exported Markdown wrappers before classifying a line."""
+    value = _clean(value)
+    value = re.sub(r"^#{1,6}\s*", "", value)
+    value = re.sub(r"^(?:[-•]\s+)(?=(?:\*\*)?Option\s+[A-H])", "", value, flags=re.I)
+    # Some source documents use **Correct Answer:** and **Options:** as
+    # literal text rather than Word bold.  They are still ordinary headings.
+    value = value.replace("**", "").replace("*", "")
+    if re.match(r"^\[\s*(?:image|figure|diagram|table)\s*description\b", value, re.I) and value.endswith("]"):
+        value = value[1:-1].strip()
+    return value
 
 
 def _paragraph_items(document):
@@ -128,7 +144,7 @@ def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
     items = _paragraph_items(Document(file_or_path))
     candidates, current, mode, image_index = [], None, None, 0
     for index, item in enumerate(items):
-        text = item["text"]
+        text = _plain_docx_markup(item["text"])
         question = QUESTION_RE.match(text) if text else None
         if question:
             # A bare "1." may be a section heading or bibliography item. Only accept it
@@ -170,6 +186,24 @@ def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
             mode = "brief"; first = _clean(brief.group(1))
             if first: current["brief_explanation"].append(first)
             continue
+        explanation = EXPLANATION_RE.match(text) if text else None
+        if explanation:
+            # A plain "Explanation:" belongs to the question itself.  Keep it
+            # distinct from explicitly labelled Brief/Detailed sections.
+            mode = "post_answer"; first = _clean(explanation.group(1))
+            if first: current["explanation"].append(first)
+            continue
+        # Once the correct answer is read, no later text can be another answer
+        # option.  It is explanation content until the next question header.
+        if mode == "post_answer":
+            current["explanation"].append(text)
+            continue
+        if mode == "brief":
+            current["brief_explanation"].append(text)
+            continue
+        if mode == "detailed":
+            current["detailed_explanation"].append(text)
+            continue
         # Avoid treating "Option A is incorrect:" in a detailed explanation as
         # an Options: heading or as an additional multiple-choice answer.
         if mode == "detailed" and re.match(r"^Option\s+[A-H]\b", text, re.I):
@@ -186,13 +220,6 @@ def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
         answer = ANSWER_RE.match(text) if text else None
         if answer:
             raw_label = answer.group(1); current["answer_key"] = chr(64 + int(raw_label)) if raw_label.isdigit() else raw_label.upper(); mode = "post_answer"; continue
-        explanation = EXPLANATION_RE.match(text) if text else None
-        if explanation:
-            # A plain "Explanation:" belongs to the question itself.  Keep it
-            # distinct from explicitly labelled Brief/Detailed sections.
-            mode = "post_answer"; first = _clean(explanation.group(1));
-            if first: current["explanation"].append(first)
-            continue
         if text:
             if mode == "options" and _add_inline_options(current, text):
                 continue
