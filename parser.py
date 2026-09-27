@@ -60,16 +60,6 @@ def _paragraph_items(document):
             style = paragraph.style.name.lower() if paragraph.style else ""
             for line_index, text in enumerate(lines or [""]):
                 items.append({"text": text, "image_parts": image_parts if line_index == 0 else [], "in_table": in_table, "is_list": "list" in style or "bullet" in style, "is_heading": "heading" in style})
-        # Text entered in a Word drawing/text box is not returned by
-        # document.paragraphs.  Question writers commonly use these boxes for
-        # the green Correct Answer and Clinical Rationale panels, so retain
-        # their paragraphs at the point where the box occurs in the document.
-        seen_box_lines = set()
-        for textbox_paragraph in paragraph._p.xpath(".//w:txbxContent/w:p"):
-            textbox_text = _clean(Paragraph(textbox_paragraph, document).text)
-            if textbox_text and textbox_text not in seen_box_lines:
-                seen_box_lines.add(textbox_text)
-                items.append({"text": textbox_text, "image_parts": [], "in_table": in_table, "is_list": False, "is_heading": False})
     for child in document.element.body.iterchildren():
         if child.tag.endswith("}p"):
             add_paragraph(Paragraph(child, document))
@@ -80,6 +70,32 @@ def _paragraph_items(document):
                     for paragraph in cell.paragraphs:
                         add_paragraph(paragraph, in_table=True)
     return items
+
+
+def _textbox_annotations(document):
+    """Return answer/rationale panels in reading order, not anchor position.
+
+    Word floating text boxes may be anchored after the question they visually
+    belong to.  Pairing panels by their document sequence avoids assigning a
+    later answer box to the following question.
+    """
+    annotations, current = [], None
+    for paragraph in document.paragraphs:
+        seen_lines = set()
+        for textbox_paragraph in paragraph._p.xpath(".//w:txbxContent/w:p"):
+            text = _plain_docx_markup(Paragraph(textbox_paragraph, document).text)
+            if not text or text in seen_lines:
+                continue
+            seen_lines.add(text)
+            answer = ANSWER_RE.match(text)
+            if answer:
+                raw_label = answer.group(1)
+                label = chr(64 + int(raw_label)) if raw_label.isdigit() else raw_label.upper()
+                current = {"answer_key": label, "explanation": []}
+                annotations.append(current)
+            elif current:
+                current["explanation"].append(text)
+    return annotations
 
 
 def _save_image(part, image_dir, sequence):
@@ -151,7 +167,8 @@ def _question_json(candidate, subject_id, created_by):
 
 def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
     """Detect common question styles; return only validated questions plus clear errors."""
-    items = _paragraph_items(Document(file_or_path))
+    document = Document(file_or_path)
+    items = _paragraph_items(document)
     candidates, current, mode, image_index = [], None, None, 0
     for index, item in enumerate(items):
         text = _plain_docx_markup(item["text"])
@@ -251,6 +268,14 @@ def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
             elif mode == "image": current["image_description"].append(text)
             elif mode == "question": current["text"] = _clean(f"{current['text']} {text}")
     if current: candidates.append(current)
+
+    # Merge floating answer/rationale panels only after every normal paragraph
+    # has been parsed.  The panels are ordered by question in the DOCX even
+    # when their drawing anchors are physically attached to a later paragraph.
+    for candidate, annotation in zip(candidates, _textbox_annotations(document)):
+        if not candidate["answer_key"]:
+            candidate["answer_key"] = annotation["answer_key"]
+        candidate["explanation"].extend(annotation["explanation"])
 
     created_by = created_by or {"uuid": "290604b4-498f-4428-8e4c-92cb9f3240d0", "name": "Akhil"}
     questions, errors, warnings = [], [], []
