@@ -60,6 +60,16 @@ def _paragraph_items(document):
             style = paragraph.style.name.lower() if paragraph.style else ""
             for line_index, text in enumerate(lines or [""]):
                 items.append({"text": text, "image_parts": image_parts if line_index == 0 else [], "in_table": in_table, "is_list": "list" in style or "bullet" in style, "is_heading": "heading" in style})
+        # Text entered in a Word drawing/text box is not returned by
+        # document.paragraphs.  Question writers commonly use these boxes for
+        # the green Correct Answer and Clinical Rationale panels, so retain
+        # their paragraphs at the point where the box occurs in the document.
+        seen_box_lines = set()
+        for textbox_paragraph in paragraph._p.xpath(".//w:txbxContent/w:p"):
+            textbox_text = _clean(Paragraph(textbox_paragraph, document).text)
+            if textbox_text and textbox_text not in seen_box_lines:
+                seen_box_lines.add(textbox_text)
+                items.append({"text": textbox_text, "image_parts": [], "in_table": in_table, "is_list": False, "is_heading": False})
     for child in document.element.body.iterchildren():
         if child.tag.endswith("}p"):
             add_paragraph(Paragraph(child, document))
@@ -212,11 +222,23 @@ def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
         options_header = OPTIONS_HEADER_RE.match(text) if text else None
         if options_header:
             mode = "options"; _add_inline_options(current, options_header.group(1)); continue
+        # Decimal-valued choices (for example, "1.3 - 1.5 mg/dL") are Word
+        # list items, not numeric option labels.  Preserve the list order as
+        # A-D before applying the generic 1. / 2. option-label matcher.
+        if item["is_list"] and re.match(r"^\d+\.\d+\b", text) and mode in {"question", "options"} and len(current["options"]) < 8:
+            label = chr(65 + len(current["options"]))
+            current["options"].append((label, len(current["options"]) + 1, text)); mode = "options"; continue
         option = OPTION_RE.match(text) if text else None
         if option:
             raw_label, option_text = option.groups()
             label = chr(64 + int(raw_label)) if raw_label.isdigit() else raw_label.upper()
             current["options"].append((label, len(current["options"]) + 1, _clean(option_text))); mode = "options"; continue
+        # Some Word exports use a real bulleted/numbered list for answer
+        # choices but do not include A), B), C), D) in the visible text.  The
+        # list order is still reliable, so preserve it as sequential options.
+        if item["is_list"] and mode in {"question", "options"} and len(current["options"]) < 8:
+            label = chr(65 + len(current["options"]))
+            current["options"].append((label, len(current["options"]) + 1, text)); mode = "options"; continue
         answer = ANSWER_RE.match(text) if text else None
         if answer:
             raw_label = answer.group(1); current["answer_key"] = chr(64 + int(raw_label)) if raw_label.isdigit() else raw_label.upper(); mode = "post_answer"; continue
