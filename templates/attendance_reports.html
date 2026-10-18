@@ -3,11 +3,11 @@
 {% block eyebrow %}EVENT MANAGEMENT{% endblock %}
 {% block heading %}Attendance Reports{% endblock %}
 {% block content %}
-<section class="hero"><div><h2>Generate event attendance reports</h2><p>Review daily and cumulative attendance, then download shareable PNG and Excel reports.</p></div></section>
+<section class="attendance-intro"><p class="eyebrow">DAILY EVENT REPORTS</p><h2>Your attendance, beautifully reported.</h2><p>Import the event Excel. Get a complete report, ready to share.</p></section>
 <section class="attendance-layout">
   <div class="panel attendance-form">
-    <p class="eyebrow">01 / IMPORT DATA</p><h2>Class-event export</h2><p class="attendance-copy">Upload the complete Excel export containing every scan for the event.</p>
-    <label class="attendance-drop" id="attendance-drop" for="attendance-file"><strong>⇧ Drop an Excel file here</strong><span>or browse your device · .xlsx · maximum 20 MB</span></label>
+    <p class="eyebrow">01 / IMPORT YOUR DATA</p><h2>Create a report</h2><p class="attendance-copy">Use the full event export with all scans recorded so far.</p>
+    <label class="attendance-drop" id="attendance-drop" for="attendance-file"><strong>⇧<br>Click or drop your Excel</strong><span>.xlsx files · up to 20 MB</span></label>
     <input id="attendance-file" type="file" accept=".xlsx" hidden>
     <p id="attendance-filename" class="file-name"></p>
     <label for="attendance-event">Event name</label><input id="attendance-event" class="text-input" type="text" maxlength="180" placeholder="e.g. Surgery Part 2">
@@ -16,7 +16,7 @@
     <p class="attendance-help">Dates, event days, batch totals and unique students are calculated automatically. The file is processed only for this report.</p>
   </div>
   <section>
-    <div id="attendance-empty" class="panel attendance-empty"><div><strong>▥</strong><h2>Your attendance report will appear here</h2><p>Upload a class-event Excel export to view attendance trends, batch totals, and unique students.</p></div></div>
+    <div id="attendance-empty" class="panel attendance-empty"><div><strong>▥</strong><h2>A clear picture of every event.</h2><p>Import your Excel to see daily attendance, running totals and unique students in one place.</p><small>Your report appears automatically after import.</small></div></div>
     <div id="attendance-result" class="panel hidden">
       <div class="panel-title"><div><p class="eyebrow">02 / EVENT REPORT</p><h2 id="attendance-title"></h2><p id="attendance-period" class="attendance-muted"></p></div><span class="badge">Report ready</span></div>
       <div class="attendance-actions"><button id="attendance-png" class="button">Download PNG</button><button id="attendance-xlsx" class="button secondary-button">Download Excel</button><button id="attendance-print" class="button secondary-button">Print report</button></div>
