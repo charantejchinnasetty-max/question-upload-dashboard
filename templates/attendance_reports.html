@@ -5,7 +5,7 @@
 {% block content %}
 <section class="hero"><div><h2>Generate event attendance reports</h2><p>Review daily and cumulative attendance, then download shareable PNG and Excel reports.</p></div></section>
 <section class="attendance-layout">
-  <aside class="panel attendance-form">
+  <div class="panel attendance-form">
     <p class="eyebrow">01 / IMPORT DATA</p><h2>Class-event export</h2><p class="attendance-copy">Upload the complete Excel export containing every scan for the event.</p>
     <label class="attendance-drop" id="attendance-drop" for="attendance-file"><strong>⇧ Drop an Excel file here</strong><span>or browse your device · .xlsx · maximum 20 MB</span></label>
     <input id="attendance-file" type="file" accept=".xlsx" hidden>
@@ -14,7 +14,7 @@
     <button class="button attendance-generate" id="attendance-generate" disabled>Generate report</button>
     <p id="attendance-error" class="attendance-error" role="alert"></p>
     <p class="attendance-help">Dates, event days, batch totals and unique students are calculated automatically. The file is processed only for this report.</p>
-  </aside>
+  </div>
   <section>
     <div id="attendance-empty" class="panel attendance-empty"><div><strong>▥</strong><h2>Your attendance report will appear here</h2><p>Upload a class-event Excel export to view attendance trends, batch totals, and unique students.</p></div></div>
     <div id="attendance-result" class="panel hidden">
