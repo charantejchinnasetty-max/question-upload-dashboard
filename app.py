@@ -1,4 +1,5 @@
 import json
+import io
 import os
 import tempfile
 import uuid
@@ -13,6 +14,7 @@ from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 
 from parser import create_standard_docx, parse_docx
+import attendance_reports
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
@@ -65,6 +67,40 @@ def upload_page(): return render_template("upload.html")
 def history_page(): return render_template("history.html")
 @app.get("/error-questions")
 def errors_page(): return render_template("errors.html")
+@app.get("/attendance-reports")
+def attendance_reports_page(): return render_template("attendance_reports.html")
+
+def _attendance_dataframe():
+    file = request.files.get("file")
+    if not file or not file.filename or not file.filename.lower().endswith(".xlsx"):
+        raise ValueError("Choose a valid .xlsx class-event export.")
+    payload = file.read(20 * 1024 * 1024 + 1)
+    if len(payload) > 20 * 1024 * 1024:
+        raise ValueError("The Excel file exceeds the 20 MB limit.")
+    return attendance_reports.load(io.BytesIO(payload))
+
+def _attendance_error(exc):
+    message = str(exc).strip("'\"") or "Could not read the class-event Excel export."
+    return jsonify({"error": message}), 400
+
+@app.post("/api/attendance/analyze")
+def attendance_analyze():
+    try: return jsonify(attendance_reports.summarize(_attendance_dataframe()))
+    except Exception as exc: return _attendance_error(exc)
+
+@app.post("/api/attendance/excel")
+def attendance_excel():
+    try:
+        output = attendance_reports.excel_bytes(_attendance_dataframe(), request.form.get("event_name", "Class Event"))
+        return send_file(io.BytesIO(output), as_attachment=True, download_name="attendance_report.xlsx", mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    except Exception as exc: return _attendance_error(exc)
+
+@app.post("/api/attendance/image")
+def attendance_image():
+    try:
+        output = attendance_reports.image_bytes(_attendance_dataframe(), request.form.get("event_name", "Class Event"))
+        return send_file(io.BytesIO(output), as_attachment=True, download_name="attendance_report.png", mimetype="image/png")
+    except Exception as exc: return _attendance_error(exc)
 
 @app.get("/categories")
 def categories():
