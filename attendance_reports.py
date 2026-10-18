@@ -204,6 +204,9 @@ def build_image(dataframe, output, event_name):
     y = table(y, "01   Daily attendance", False) + 40
     y = table(y, "02   Cumulative attendance", True) + 28
     draw.text((margin, y), "Scans count every attendance record. Unique students count each admission number once.", font=font(18), fill=muted)
+    if report["skipped_rows"] or report["missing_ids"]:
+        y += 27
+        draw.text((margin, y), f"Invalid-date rows skipped: {report['skipped_rows']}   /   Scans without a student ID: {report['missing_ids']}", font=font(18), fill=muted)
     image.crop((0, 0, width, y + 62)).save(output, format="PNG")
 
 
