@@ -39,7 +39,7 @@
     byId("attendance-cumulative").innerHTML = table(data, true);
     const notices = []; if (data.skipped_rows) notices.push(`${data.skipped_rows} row(s) were skipped because their scan date is invalid.`); if (data.missing_ids) notices.push(`${data.missing_ids} scan(s) have no student ID and are excluded from unique counts.`);
     const warning = byId("attendance-warning"); warning.textContent = notices.join(" "); warning.classList.toggle("hidden", !notices.length);
-    byId("attendance-empty").classList.add("hidden"); byId("attendance-result").classList.remove("hidden");
+    byId("attendance-result").classList.remove("hidden");
   }
   async function previewImage() {
     if (state.imageUrl) URL.revokeObjectURL(state.imageUrl);
