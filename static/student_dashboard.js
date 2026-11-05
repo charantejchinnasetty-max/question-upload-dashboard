@@ -4,6 +4,8 @@
   const number = value => Number(value || 0).toLocaleString('en-IN');
   const escape = value => String(value ?? '—').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
   let filtersLoaded = false, loadController = null, requestSequence = 0, drawerRecords = [];
+  document.querySelector('#student-drawer-table').closest('table').querySelector('thead th:last-child').textContent = 'Event count';
+  new MutationObserver(() => document.querySelectorAll('.attendance-button').forEach(button => { const record = drawerRecords[Number(button.dataset.attendanceIndex)]; if (record) button.textContent = `${number(record.attended_event_count)} events`; })).observe($('student-drawer-table'), {childList: true});
   function message(text = '', error = false) { const node = $('student-dashboard-status'); node.textContent = text; node.classList.toggle('converter-error', error); }
   function filterParams(includeFilters = false) { return new URLSearchParams({search: $('student-search').value.trim(), state: $('student-state').value, batch: $('student-batch').value, college: $('student-college').value, status: $('student-status').value, include_filters: includeFilters ? '1' : ''}); }
   function selectOptions(id, values) { const select = $(id); const first = select.options[0].outerHTML; select.innerHTML = first + values.map(x => `<option value="${escape(x.label)}">${escape(x.label)}</option>`).join(''); }
