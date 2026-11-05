@@ -247,3 +247,98 @@ def student_records(filters=None):
              total_fee, discount_fee, paid_amount, due_amount, attended_event_count, attended_events
              FROM student_records {where} ORDER BY name NULLS LAST, source_row_number""", params)
     return [{key: _clean(value) for key, value in row.items()} for row in records]
+
+
+def _agent_table_rows(records):
+    """Return a deliberately small, display-safe student table for the assistant."""
+    return [{
+        "Name": row.get("name") or "Not specified",
+        "Mobile": row.get("mobile") or "—",
+        "Batch": row.get("batch_name") or "Not specified",
+        "College": row.get("college") or "Not specified",
+        "State": row.get("college_state") or "Not specified",
+        "Paid": _clean(row.get("paid_amount")) or 0,
+        "Due": _clean(row.get("due_amount")) or 0,
+        "Event count": row.get("attended_event_count") or 0,
+        "Subjects": row.get("attended_events") or [],
+    } for row in records]
+
+
+def agent_answer(question, filters=None):
+    """Answer supported natural-language questions from the active dataset only.
+
+    This intentionally uses deterministic, parameterized queries instead of an LLM
+    so figures and student details are always traceable to imported records.
+    """
+    question = _text(question)
+    if not question:
+        raise ValueError("Ask a question about students, batches, colleges, fees, dues, or attendance.")
+    filters = dict(filters or {})
+    lower = question.lower()
+    mobile_match = re.search(r"(?<!\d)(\d{7,15})(?!\d)", question)
+    where, params = _filtered_where(filters)
+
+    with _connection() as connection, connection.cursor() as cursor:
+        # A mobile number is an unambiguous profile lookup. It takes precedence over reports.
+        if mobile_match:
+            mobile = mobile_match.group(1)
+            profile_where = where + " AND mobile_normalized = %s"
+            profile_params = [*params, mobile]
+            records = _rows(cursor, f"""SELECT name, mobile, email, batch_name, college, college_state,
+                mbbs_batch, status, total_fee, discount_fee, paid_amount, due_amount,
+                attended_event_count, attended_events FROM student_records {profile_where}
+                ORDER BY source_row_number LIMIT 10""", profile_params)
+            if not records:
+                return {"answer": f"No active student record matched mobile number {mobile} with the current dashboard filters.", "rows": [], "columns": [], "chart": None}
+            first = records[0]
+            subjects = first.get("attended_events") or []
+            answer = (f"{first.get('name') or 'This student'} is in {first.get('batch_name') or 'an unspecified batch'} "
+                      f"at {first.get('college') or 'an unspecified college'}. They have attended "
+                      f"{first.get('attended_event_count') or 0} events, paid {first.get('paid_amount') or 0}, "
+                      f"and have {first.get('due_amount') or 0} due.")
+            if any(word in lower for word in ("subject", "class", "attend", "event")):
+                answer += " Attended subjects/classes: " + (", ".join(subjects) if subjects else "none recorded in the imported file") + "."
+            return {"answer": answer, "rows": _agent_table_rows(records), "columns": ["Name", "Mobile", "Batch", "College", "Paid", "Due", "Event count", "Subjects"], "chart": None}
+
+        # College, state and batch questions return group reports that respect active filters.
+        if any(word in lower for word in ("college", "colleges")):
+            rows = _rows(cursor, f"""SELECT COALESCE(NULLIF(college, ''), 'Not specified') AS label,
+                COUNT(*) AS students, COALESCE(SUM(paid_amount), 0) AS paid_amount,
+                COALESCE(SUM(due_amount), 0) AS due_amount
+                FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC LIMIT 50""", params)
+            clean = [{key: _clean(value) for key, value in row.items()} for row in rows]
+            return {"answer": f"Found {len(clean)} colleges in the active filtered dataset. Select a college row to review its student count and financial totals.", "rows": clean, "columns": ["label", "students", "paid_amount", "due_amount"], "chart": {"label": "College", "items": clean[:10]}}
+        if any(word in lower for word in ("state", "states", "location", "geography")):
+            rows = _rows(cursor, f"""SELECT COALESCE(NULLIF(college_state, ''), 'Not specified') AS label,
+                COUNT(*) AS students, COALESCE(SUM(paid_amount), 0) AS paid_amount,
+                COALESCE(SUM(due_amount), 0) AS due_amount
+                FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC LIMIT 50""", params)
+            clean = [{key: _clean(value) for key, value in row.items()} for row in rows]
+            return {"answer": f"Found {len(clean)} states in the active filtered dataset.", "rows": clean, "columns": ["label", "students", "paid_amount", "due_amount"], "chart": {"label": "State", "items": clean[:10]}}
+        if any(word in lower for word in ("batch", "batches")):
+            rows = _rows(cursor, f"""SELECT COALESCE(NULLIF(batch_name, ''), 'Not specified') AS label,
+                COUNT(*) AS students, COALESCE(SUM(paid_amount), 0) AS paid_amount,
+                COALESCE(SUM(due_amount), 0) AS due_amount, COALESCE(SUM(attended_event_count), 0) AS events
+                FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC LIMIT 50""", params)
+            clean = [{key: _clean(value) for key, value in row.items()} for row in rows]
+            return {"answer": f"Found {len(clean)} batches in the active filtered dataset.", "rows": clean, "columns": ["label", "students", "paid_amount", "due_amount", "events"], "chart": {"label": "Batch", "items": clean[:10]}}
+
+        # Attendance questions list exact student results, never a made-up class total.
+        if any(word in lower for word in ("attendance", "attended", "subject", "subjects", "class", "classes", "event", "events")):
+            attendance_where = where + " AND COALESCE(attended_event_count, 0) > 0"
+            records = _rows(cursor, f"""SELECT name, mobile, batch_name, college, college_state, paid_amount,
+                due_amount, attended_event_count, attended_events FROM student_records {attendance_where}
+                ORDER BY attended_event_count DESC, name NULLS LAST LIMIT 100""", params)
+            total = sum(int(row.get("attended_event_count") or 0) for row in records)
+            return {"answer": f"{len(records)} matching students have attendance recorded. The displayed students total {total} attended events; open a student's subject list for the imported class names.", "rows": _agent_table_rows(records), "columns": ["Name", "Mobile", "Batch", "College", "Event count", "Subjects"], "chart": None}
+
+        summary = _rows(cursor, f"""SELECT COUNT(*) AS students, COALESCE(SUM(total_fee), 0) AS total_fee,
+            COALESCE(SUM(paid_amount), 0) AS paid_amount, COALESCE(SUM(due_amount), 0) AS due_amount,
+            COUNT(*) FILTER (WHERE COALESCE(due_amount, 0) > 0) AS students_with_due,
+            COUNT(*) FILTER (WHERE COALESCE(attended_event_count, 0) > 0) AS students_with_attendance,
+            COALESCE(SUM(attended_event_count), 0) AS total_events FROM student_records {where}""", params)[0]
+    clean = {key: _clean(value) for key, value in summary.items()}
+    return {"answer": (f"For the current dashboard filters there are {clean['students']} students, total fee {clean['total_fee']}, "
+                       f"paid {clean['paid_amount']}, due {clean['due_amount']}, and {clean['total_events']} attended events. "
+                       "Ask about a batch, college, state, mobile number, fees, dues, or attendance for a detailed result."),
+            "rows": [clean], "columns": list(clean), "chart": None}

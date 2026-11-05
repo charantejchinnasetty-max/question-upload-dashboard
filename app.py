@@ -76,6 +76,21 @@ def book_event_json_page(): return render_template("book_event_json.html")
 @app.get("/student-dashboard")
 def student_dashboard_page(): return render_template("student_dashboard.html")
 
+@app.get("/student-ai-agent")
+def student_ai_agent_page(): return render_template("student_ai_agent.html")
+
+@app.post("/api/students/agent")
+def student_ai_agent():
+    payload = request.get_json(silent=True) or {}
+    try:
+        return jsonify(student_data.agent_answer(payload.get("question", ""), payload.get("filters") or {}))
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except RuntimeError as exc:
+        return jsonify({"error": str(exc)}), 503
+    except Exception:
+        return jsonify({"error": "The Student AI Agent could not query the active student dataset."}), 500
+
 @app.post("/api/students/import")
 def student_import():
     file = request.files.get("file")

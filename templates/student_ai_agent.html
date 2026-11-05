@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Student AI Agent{% endblock %}
+{% block eyebrow %}STUDENT INTELLIGENCE{% endblock %}
+{% block heading %}Student AI Agent{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='student_ai_agent.css') }}">
+<section class="agent-shell">
+  <aside class="agent-side panel">
+    <p class="eyebrow">DATA-BOUND ASSISTANT</p>
+    <h2>Ask your student data.</h2>
+    <p>The answers are calculated only from your active Excel import and the filters below.</p>
+    <div class="agent-filters">
+      <label>Search<input id="agent-search" class="text-input" placeholder="Name, mobile, email or college"></label>
+      <label>State<select id="agent-state"><option value="">All states</option></select></label>
+      <label>Batch<select id="agent-batch"><option value="">All batches</option></select></label>
+      <label>College<select id="agent-college"><option value="">All colleges</option></select></label>
+      <label>Status<select id="agent-status"><option value="">All statuses</option></select></label>
+    </div>
+    <button id="agent-reset" class="text-button" type="button">Reset filters</button>
+    <div class="agent-suggestions"><b>Try asking</b><button type="button">Show the financial summary</button><button type="button">Which batches have the most students?</button><button type="button">Show college-wise student counts</button><button type="button">Which students have attendance?</button><button type="button">Find student 7013781364</button></div>
+  </aside>
+  <section class="agent-chat panel">
+    <header class="agent-chat-head"><div><p class="eyebrow">LIVE CONVERSATION</p><h2>Student AI Agent</h2></div><span id="agent-live">● Data ready</span></header>
+    <div id="agent-messages" class="agent-messages" aria-live="polite"><article class="agent-message assistant"><b>Student AI Agent</b><p>Ask a question about your active student data. I can calculate totals, find student profiles, show attendance subjects, and prepare batch, college, state, fee, paid, or due reports.</p></article></div>
+    <form id="agent-form" class="agent-composer"><textarea id="agent-question" rows="2" placeholder="Example: Show batch-wise fee and due totals"></textarea><button class="button" type="submit">Send →</button></form>
+  </section>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='student_ai_agent.js') }}"></script>{% endblock %}
