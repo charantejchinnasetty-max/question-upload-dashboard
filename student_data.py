@@ -11,6 +11,43 @@ from openpyxl import load_workbook
 REQUIRED_HEADERS = {"Name", "Mobile", "Batch_Name"}
 PLACEHOLDERS = {"", "---", "others", "none", "null", "nan"}
 
+# Reference vocabulary used only to understand common NEET PG subject names in a
+# question. Attendance itself is always calculated from the imported Excel data.
+NEET_PG_SUBJECTS = {
+    "Anatomy": ("anatomy",), "Physiology": ("physiology",), "Biochemistry": ("biochemistry", "biochem"),
+    "Pharmacology": ("pharmacology", "pharma"), "Pathology": ("pathology", "path"),
+    "Microbiology": ("microbiology", "micro"), "Forensic Medicine": ("forensic", "f.m", "fm"),
+    "PSM": ("psm", "community medicine"), "ENT": ("ent",), "Ophthalmology": ("ophthalmology", "ophthal"),
+    "Medicine": ("medicine",), "Surgery": ("surgery",), "Obstetrics & Gynaecology": ("obg", "obstetrics", "gynaecology", "gynecology"),
+    "Paediatrics": ("paediatrics", "pediatrics"), "Orthopaedics": ("orthopaedics", "orthopedics", "ortho"),
+    "Dermatology": ("dermatology", "derma"), "Psychiatry": ("psychiatry",), "Radiology": ("radiology", "radio"),
+    "Anaesthesia": ("anaesthesia", "anesthesia", "anaesth"),
+}
+
+
+def _agent_subject(question):
+    """Recognize subject aliases such as micro, pharma and derma."""
+    lower = question.lower()
+    compact = re.sub(r"[^a-z0-9]", "", lower)
+    for canonical, aliases in NEET_PG_SUBJECTS.items():
+        if any((re.search(r"\b" + re.escape(alias.lower()) + r"\b", lower) if len(re.sub(r"[^a-z0-9]", "", alias)) <= 3
+                else re.sub(r"[^a-z0-9]", "", alias) in compact) for alias in aliases):
+            return canonical, aliases
+    return None, ()
+
+
+def _agent_batch(cursor, where, params, question):
+    """Find a real imported batch referenced anywhere in the user's question."""
+    batch_rows = _rows(cursor, f"SELECT DISTINCT batch_name FROM student_records {where} AND batch_name IS NOT NULL", params)
+    compact_question = re.sub(r"[^a-z0-9]", "", question.lower())
+    exact = next((row["batch_name"] for row in batch_rows
+                  if re.sub(r"[^a-z0-9]", "", row["batch_name"].lower()) in compact_question), None)
+    if exact:
+        return exact
+    short_codes = [re.sub(r"[^a-z0-9]", "", code) for code in re.findall(r"ssp\s*\d+\s*\(?[a-z]\)?", question.lower())]
+    return next((row["batch_name"] for row in batch_rows if any(
+        re.sub(r"[^a-z0-9]", "", row["batch_name"].lower()).startswith(code) for code in short_codes)), None)
+
 
 def _driver():
     """Load the PostgreSQL driver only when Student Dashboard is used."""
@@ -300,28 +337,45 @@ def agent_answer(question, filters=None):
                 answer += " Attended subjects/classes: " + (", ".join(subjects) if subjects else "none recorded in the imported file") + "."
             return {"answer": answer, "rows": _agent_table_rows(records), "columns": ["Name", "Mobile", "Batch", "College", "Paid", "Due", "Event count", "Subjects"], "chart": None}
 
-        # Subject-specific attendance questions, for example:
-        # "How many SSP3 (B) 2026 ACHIEVERS BATCH members attended Micro?"
-        # The event term and any batch named in the question are resolved against the
-        # actual imported values, then every matching student is returned.
+        # Data-driven batch, subject and academic questions. A subject can be named
+        # anywhere in a sentence: "SSP2B derma class", "who attended micro", etc.
+        batch_name = _agent_batch(cursor, where, params, question)
+        canonical_subject, aliases = _agent_subject(question)
         subject_match = re.search(r"(?:attended|attend|attendance\s+(?:for|in))\s+([a-z][a-z0-9 .&/\-]*?)(?=\s+(?:in|from|for)\s+|[?.!,]|$)", lower)
-        if subject_match:
-            subject = _text(subject_match.group(1))
-            if subject and subject not in {"event", "events", "class", "classes", "attendance"}:
-                batch_rows = _rows(cursor, f"SELECT DISTINCT batch_name FROM student_records {where} AND batch_name IS NOT NULL", params)
-                compact_question = re.sub(r"[^a-z0-9]", "", lower)
-                batch_name = next((row["batch_name"] for row in batch_rows if re.sub(r"[^a-z0-9]", "", row["batch_name"].lower()) in compact_question), None)
-                subject_where, subject_params = where, list(params)
-                if batch_name:
-                    subject_where += " AND batch_name = %s"
-                    subject_params.append(batch_name)
-                subject_where += " AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(attended_events) AS event_name WHERE event_name ILIKE %s)"
-                subject_params.append(f"%{subject}%")
-                records = _rows(cursor, f"""SELECT name, mobile, batch_name, college, college_state,
-                    paid_amount, due_amount, attended_event_count, attended_events FROM student_records {subject_where}
-                    ORDER BY name NULLS LAST LIMIT 500""", subject_params)
-                label = f" in {batch_name}" if batch_name else ""
-                return {"answer": f"Exactly {len(records)} students attended {subject}{label}, based on the imported Attended_events values. The matching students are listed below.", "rows": _agent_table_rows(records), "columns": ["Name", "Mobile", "Batch", "College", "Event count", "Subjects"], "chart": None}
+        if not canonical_subject and subject_match:
+            candidate = _text(subject_match.group(1))
+            if candidate and candidate not in {"event", "events", "class", "classes", "attendance"}:
+                canonical_subject, aliases = candidate.title(), (candidate,)
+
+        subject_where, subject_params = where, list(params)
+        if batch_name:
+            subject_where += " AND batch_name = %s"
+            subject_params.append(batch_name)
+
+        if canonical_subject:
+            event_conditions = " OR ".join("event_name ILIKE %s" for _ in aliases)
+            records = _rows(cursor, f"""SELECT name, mobile, batch_name, college, college_state,
+                paid_amount, due_amount, attended_event_count, attended_events FROM student_records {subject_where}
+                AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(attended_events) AS event_name WHERE {event_conditions})
+                ORDER BY name NULLS LAST LIMIT 500""", [*subject_params, *[f"%{alias}%" for alias in aliases]])
+            label = f" in {batch_name}" if batch_name else ""
+            return {"answer": f"Exactly {len(records)} students have {canonical_subject} recorded in their attended events{label}. The matching students are listed below.", "rows": _agent_table_rows(records), "columns": ["Name", "Mobile", "Batch", "College", "Event count", "Subjects"], "chart": None}
+
+        if batch_name and any(word in lower for word in ("completed", "complete", "pending", "remaining", "academic", "class", "classes", "subject", "subjects")):
+            event_rows = _rows(cursor, f"SELECT attended_events FROM student_records {subject_where}", subject_params)
+            imported_events = " ".join(event for row in event_rows for event in (row.get("attended_events") or [])).lower()
+            status_rows = []
+            for subject, subject_aliases in NEET_PG_SUBJECTS.items():
+                recorded = any(alias.lower() in imported_events for alias in subject_aliases)
+                status_rows.append({"Subject": subject, "Attendance evidence": "Recorded" if recorded else "Not recorded"})
+            completed = sum(row["Attendance evidence"] == "Recorded" for row in status_rows)
+            return {"answer": f"{batch_name} has attendance evidence for {completed} of the {len(NEET_PG_SUBJECTS)} NEET PG subjects. Subjects marked Not recorded are not yet evidenced in this Excel import; a true pending-class count needs a planned class schedule or timetable in the source data.", "rows": status_rows, "columns": ["Subject", "Attendance evidence"], "chart": None}
+
+        if batch_name and any(word in lower for word in ("student", "students", "member", "members", "who", "list", "show")):
+            records = _rows(cursor, f"""SELECT name, mobile, batch_name, college, college_state, paid_amount,
+                due_amount, attended_event_count, attended_events FROM student_records {subject_where}
+                ORDER BY name NULLS LAST LIMIT 500""", subject_params)
+            return {"answer": f"{len(records)} students are in {batch_name} under the current filters.", "rows": _agent_table_rows(records), "columns": ["Name", "Mobile", "Batch", "College", "Paid", "Due", "Event count", "Subjects"], "chart": None}
 
         # College, state and batch questions return group reports that respect active filters.
         if any(word in lower for word in ("college", "colleges")):
