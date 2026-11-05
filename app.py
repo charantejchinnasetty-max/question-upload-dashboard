@@ -106,6 +106,12 @@ def student_records_data():
     except RuntimeError as exc: return jsonify({"error": str(exc)}), 503
     except Exception: return jsonify({"error": "Could not load matching students."}), 500
 
+@app.get("/api/students/colleges")
+def student_college_counts():
+    try: return jsonify({"colleges": student_data.college_counts(request.args)})
+    except RuntimeError as exc: return jsonify({"error": str(exc)}), 503
+    except Exception: return jsonify({"error": "Could not load college counts."}), 500
+
 @app.post("/api/book-event-json/convert")
 def convert_book_event_json():
     file = request.files.get("file")

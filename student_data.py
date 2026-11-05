@@ -115,6 +115,7 @@ def initialize():
             CREATE INDEX IF NOT EXISTS student_records_mobile_idx ON student_records(mobile_normalized);
             CREATE INDEX IF NOT EXISTS student_records_batch_idx ON student_records(batch_name);
             CREATE INDEX IF NOT EXISTS student_records_state_idx ON student_records(college_state);
+            CREATE INDEX IF NOT EXISTS student_records_college_idx ON student_records(college);
         """)
 
 
@@ -224,11 +225,22 @@ def dashboard_data(filters=None):
             "batches": _rows(cursor, "SELECT DISTINCT batch_name AS label FROM student_records WHERE import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE) AND batch_name IS NOT NULL AND batch_name <> '' ORDER BY label"),
             "colleges": _rows(cursor, "SELECT DISTINCT college AS label FROM student_records WHERE import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE) AND college IS NOT NULL AND college <> '' ORDER BY label"),
             "statuses": _rows(cursor, "SELECT DISTINCT status AS label FROM student_records WHERE import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE) AND status IS NOT NULL AND status <> '' ORDER BY label"),
-        }
+        } if _text((filters or {}).get("include_filters")) else {}
     return {"summary": {key: _clean(value) for key, value in summary.items()},
             "batches": [{key: _clean(value) for key, value in row.items()} for row in batches],
             "states": [{key: _clean(value) for key, value in row.items()} for row in states],
             "colleges": [{key: _clean(value) for key, value in row.items()} for row in colleges], "filters": filter_values}
+
+
+def college_counts(filters=None):
+    """Return every college with its live count, then allow a second click into students."""
+    where, params = _filtered_where(filters)
+    with _connection() as connection, connection.cursor() as cursor:
+        results = _rows(cursor, f"""SELECT COALESCE(NULLIF(college, ''), 'Not specified') AS label,
+             COUNT(*) AS students, COALESCE(SUM(paid_amount), 0) AS paid_amount,
+             COALESCE(SUM(due_amount), 0) AS due_amount
+             FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC""", params)
+    return [{key: _clean(value) for key, value in row.items()} for row in results]
 
 
 def student_records(filters=None):
