@@ -82,8 +82,14 @@ def student_ai_agent_page(): return render_template("student_ai_agent.html")
 @app.post("/api/students/agent")
 def student_ai_agent():
     payload = request.get_json(silent=True) or {}
+    question = str(payload.get("question", "")).strip()
+    history = payload.get("history") or []
+    if question.lower().startswith(("what about", "and ", "those", "them", "that ")):
+        previous = next((str(item.get("content", "")) for item in reversed(history) if item.get("role") == "user"), "")
+        if previous:
+            question = f"{previous}. Follow-up: {question}"
     try:
-        return jsonify(student_data.agent_answer(payload.get("question", ""), payload.get("filters") or {}))
+        return jsonify(student_data.agent_answer(question, payload.get("filters") or {}))
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except RuntimeError as exc:
