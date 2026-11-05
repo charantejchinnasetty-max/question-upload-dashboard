@@ -217,9 +217,6 @@ def dashboard_data(filters=None):
             FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC LIMIT 8""", params)
         states = _rows(cursor, f"""SELECT COALESCE(NULLIF(college_state, ''), 'Not specified') AS label, COUNT(*) AS students
             FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC LIMIT 8""", params)
-        colleges = _rows(cursor, f"""SELECT COALESCE(NULLIF(college, ''), 'Not specified') AS label, COUNT(*) AS students,
-                   COALESCE(SUM(paid_amount), 0) AS paid_amount, COALESCE(SUM(due_amount), 0) AS due_amount
-            FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC LIMIT 10""", params)
         filter_values = {
             "states": _rows(cursor, "SELECT DISTINCT college_state AS label FROM student_records WHERE import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE) AND college_state IS NOT NULL AND college_state <> '' ORDER BY label"),
             "batches": _rows(cursor, "SELECT DISTINCT batch_name AS label FROM student_records WHERE import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE) AND batch_name IS NOT NULL AND batch_name <> '' ORDER BY label"),
@@ -228,8 +225,7 @@ def dashboard_data(filters=None):
         } if _text((filters or {}).get("include_filters")) else {}
     return {"summary": {key: _clean(value) for key, value in summary.items()},
             "batches": [{key: _clean(value) for key, value in row.items()} for row in batches],
-            "states": [{key: _clean(value) for key, value in row.items()} for row in states],
-            "colleges": [{key: _clean(value) for key, value in row.items()} for row in colleges], "filters": filter_values}
+            "states": [{key: _clean(value) for key, value in row.items()} for row in states], "filters": filter_values}
 
 
 def college_counts(filters=None):

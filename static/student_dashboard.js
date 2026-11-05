@@ -3,7 +3,7 @@
   const rupees = value => new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'INR', maximumFractionDigits: 0}).format(Number(value || 0));
   const number = value => Number(value || 0).toLocaleString('en-IN');
   const escape = value => String(value ?? '—').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
-  let filtersLoaded = false;
+  let filtersLoaded = false, loadController = null, requestSequence = 0;
   function message(text = '', error = false) { const node = $('student-dashboard-status'); node.textContent = text; node.classList.toggle('converter-error', error); }
   function filterParams(includeFilters = false) { return new URLSearchParams({search: $('student-search').value.trim(), state: $('student-state').value, batch: $('student-batch').value, college: $('student-college').value, status: $('student-status').value, include_filters: includeFilters ? '1' : ''}); }
   function selectOptions(id, values) { const select = $(id); const first = select.options[0].outerHTML; select.innerHTML = first + values.map(x => `<option value="${escape(x.label)}">${escape(x.label)}</option>`).join(''); }
@@ -17,7 +17,7 @@
     $('batch-table').innerHTML = data.batches.map(row => `<tr class="drill-row" data-batch="${escape(row.label)}"><td><strong>${escape(row.label)}</strong></td><td>${number(row.students)}</td><td>${rupees(row.paid_amount)}</td><td class="due-cell">${rupees(row.due_amount)}</td><td class="row-arrow">View →</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No matching batches.</td></tr>';
     if (!filtersLoaded && data.filters.states) { selectOptions('student-state', data.filters.states); selectOptions('student-batch', data.filters.batches); selectOptions('student-college', data.filters.colleges); selectOptions('student-status', data.filters.statuses); filtersLoaded = true; }
   }
-  async function load(includeFilters = false) { message('Loading live student analytics…'); try { const response = await fetch(`/api/students/dashboard?${filterParams(includeFilters)}`); const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Could not load dashboard.'); render(data); message(''); } catch (error) { message(error.message, true); } }
+  async function load(includeFilters = false) { const requestId = ++requestSequence; if (loadController) loadController.abort(); loadController = new AbortController(); try { const response = await fetch(`/api/students/dashboard?${filterParams(includeFilters)}`, {signal: loadController.signal}); const data = await response.json(); if (!response.ok) throw new Error(data.error || 'Could not load dashboard.'); if (requestId === requestSequence) render(data); message(''); } catch (error) { if (error.name !== 'AbortError') message(error.message, true); } }
   ['student-search','student-state','student-batch','student-college','student-status'].forEach(id => $(id).addEventListener(id === 'student-search' ? 'input' : 'change', () => { clearTimeout(window.studentSearchTimer); window.studentSearchTimer = setTimeout(load, 250); }));
   $('student-reset').addEventListener('click', () => { $('student-search').value = ''; $('student-state').value = ''; $('student-batch').value = ''; $('student-college').value = ''; $('student-status').value = ''; load(); });
   function drawerQuery(kind) { const query = filterParams(); if (kind === 'due') query.set('due_only', '1'); if (kind === 'attendance') query.set('attendance_only', '1'); return query; }
