@@ -161,3 +161,59 @@ def import_workbook(source, filename, replace=False):
             VALUES (%s, %s, %s, %s::jsonb, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb)
         """, prepared)
     return {"import_id": str(import_id), "rows": len(prepared), "headers": headers}
+
+
+def dashboard_data(filters=None):
+    """Return live overview data calculated only from active student imports."""
+    filters = filters or {}
+    clauses = ["import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE)"]
+    params = []
+    search = _text(filters.get("search")); state = _text(filters.get("state"))
+    batch = _text(filters.get("batch")); status = _text(filters.get("status"))
+    if search:
+        clauses.append("(name ILIKE %s OR mobile ILIKE %s OR email ILIKE %s OR college ILIKE %s)")
+        params.extend([f"%{search}%"] * 4)
+    for column, value in (("college_state", state), ("batch_name", batch), ("status", status)):
+        if value:
+            clauses.append(f"{column} = %s"); params.append(value)
+    where = " WHERE " + " AND ".join(clauses)
+
+    def rows(cursor, query, query_params=()):
+        cursor.execute(query, query_params)
+        names = [item.name for item in cursor.description]
+        return [dict(zip(names, record)) for record in cursor.fetchall()]
+
+    def clean(value):
+        if isinstance(value, Decimal): return float(value)
+        if isinstance(value, date): return value.isoformat()
+        return value
+
+    with _connection() as connection, connection.cursor() as cursor:
+        summary = rows(cursor, f"""
+            SELECT COUNT(*) AS students, COALESCE(SUM(total_fee), 0) AS total_fee,
+                   COALESCE(SUM(paid_amount), 0) AS paid_amount, COALESCE(SUM(due_amount), 0) AS due_amount,
+                   COALESCE(SUM(discount_fee), 0) AS discounts, COUNT(DISTINCT NULLIF(college, '')) AS colleges,
+                   COUNT(DISTINCT NULLIF(batch_name, '')) AS batches,
+                   COUNT(*) FILTER (WHERE COALESCE(due_amount, 0) > 0) AS with_dues,
+                   COUNT(*) FILTER (WHERE COALESCE(attended_event_count, 0) > 0) AS with_attendance,
+                   COALESCE(SUM(attended_event_count), 0) AS total_attendances,
+                   COUNT(*) FILTER (WHERE LOWER(COALESCE(status, '')) IN ('active', 'paid', 'completed')) AS active_students
+            FROM student_records {where}
+        """, params)[0]
+        batches = rows(cursor, f"""SELECT COALESCE(NULLIF(batch_name, ''), 'Not specified') AS label, COUNT(*) AS students,
+                   COALESCE(SUM(paid_amount), 0) AS paid_amount, COALESCE(SUM(due_amount), 0) AS due_amount
+            FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC LIMIT 8""", params)
+        states = rows(cursor, f"""SELECT COALESCE(NULLIF(college_state, ''), 'Not specified') AS label, COUNT(*) AS students
+            FROM student_records {where} GROUP BY 1 ORDER BY students DESC, label ASC LIMIT 8""", params)
+        students = rows(cursor, f"""SELECT name, mobile, batch_name, college, college_state, status, total_fee, paid_amount,
+                   due_amount, attended_event_count FROM student_records {where}
+            ORDER BY name NULLS LAST, source_row_number LIMIT 25""", params)
+        filter_values = {
+            "states": rows(cursor, "SELECT DISTINCT college_state AS label FROM student_records WHERE import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE) AND college_state IS NOT NULL AND college_state <> '' ORDER BY label"),
+            "batches": rows(cursor, "SELECT DISTINCT batch_name AS label FROM student_records WHERE import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE) AND batch_name IS NOT NULL AND batch_name <> '' ORDER BY label"),
+            "statuses": rows(cursor, "SELECT DISTINCT status AS label FROM student_records WHERE import_id IN (SELECT id FROM student_imports WHERE is_active = TRUE) AND status IS NOT NULL AND status <> '' ORDER BY label"),
+        }
+    return {"summary": {key: clean(value) for key, value in summary.items()},
+            "batches": [{key: clean(value) for key, value in row.items()} for row in batches],
+            "states": [{key: clean(value) for key, value in row.items()} for row in states],
+            "students": [{key: clean(value) for key, value in row.items()} for row in students], "filters": filter_values}
