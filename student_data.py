@@ -300,6 +300,29 @@ def agent_answer(question, filters=None):
                 answer += " Attended subjects/classes: " + (", ".join(subjects) if subjects else "none recorded in the imported file") + "."
             return {"answer": answer, "rows": _agent_table_rows(records), "columns": ["Name", "Mobile", "Batch", "College", "Paid", "Due", "Event count", "Subjects"], "chart": None}
 
+        # Subject-specific attendance questions, for example:
+        # "How many SSP3 (B) 2026 ACHIEVERS BATCH members attended Micro?"
+        # The event term and any batch named in the question are resolved against the
+        # actual imported values, then every matching student is returned.
+        subject_match = re.search(r"(?:attended|attend|attendance\s+(?:for|in))\s+([a-z][a-z0-9 .&/\-]*?)(?=\s+(?:in|from|for)\s+|[?.!,]|$)", lower)
+        if subject_match:
+            subject = _text(subject_match.group(1))
+            if subject and subject not in {"event", "events", "class", "classes", "attendance"}:
+                batch_rows = _rows(cursor, f"SELECT DISTINCT batch_name FROM student_records {where} AND batch_name IS NOT NULL", params)
+                compact_question = re.sub(r"[^a-z0-9]", "", lower)
+                batch_name = next((row["batch_name"] for row in batch_rows if re.sub(r"[^a-z0-9]", "", row["batch_name"].lower()) in compact_question), None)
+                subject_where, subject_params = where, list(params)
+                if batch_name:
+                    subject_where += " AND batch_name = %s"
+                    subject_params.append(batch_name)
+                subject_where += " AND EXISTS (SELECT 1 FROM jsonb_array_elements_text(attended_events) AS event_name WHERE event_name ILIKE %s)"
+                subject_params.append(f"%{subject}%")
+                records = _rows(cursor, f"""SELECT name, mobile, batch_name, college, college_state,
+                    paid_amount, due_amount, attended_event_count, attended_events FROM student_records {subject_where}
+                    ORDER BY name NULLS LAST LIMIT 500""", subject_params)
+                label = f" in {batch_name}" if batch_name else ""
+                return {"answer": f"Exactly {len(records)} students attended {subject}{label}, based on the imported Attended_events values. The matching students are listed below.", "rows": _agent_table_rows(records), "columns": ["Name", "Mobile", "Batch", "College", "Event count", "Subjects"], "chart": None}
+
         # College, state and batch questions return group reports that respect active filters.
         if any(word in lower for word in ("college", "colleges")):
             rows = _rows(cursor, f"""SELECT COALESCE(NULLIF(college, ''), 'Not specified') AS label,
