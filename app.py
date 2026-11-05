@@ -10,6 +10,7 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, send_file
 from flask_cors import CORS
+from openpyxl import load_workbook
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
 
@@ -69,6 +70,43 @@ def history_page(): return render_template("history.html")
 def errors_page(): return render_template("errors.html")
 @app.get("/attendance-reports")
 def attendance_reports_page(): return render_template("attendance_reports.html")
+@app.get("/book-event-json")
+def book_event_json_page(): return render_template("book_event_json.html")
+
+@app.post("/api/book-event-json/convert")
+def convert_book_event_json():
+    file = request.files.get("file")
+    if not file or not file.filename or not file.filename.lower().endswith(".xlsx"):
+        return jsonify({"error": "Choose a valid .xlsx file containing a mobile column."}), 400
+    payload = file.read(20 * 1024 * 1024 + 1)
+    if len(payload) > 20 * 1024 * 1024:
+        return jsonify({"error": "The Excel file exceeds the 20 MB limit."}), 413
+    try:
+        worksheet = load_workbook(io.BytesIO(payload), read_only=True, data_only=True).active
+        rows = worksheet.iter_rows(values_only=True)
+        headers = next(rows, None)
+        if not headers:
+            raise ValueError("The Excel file is empty.")
+        mobile_index = next((index for index, header in enumerate(headers) if str(header or "").strip().lower() == "mobile"), None)
+        if mobile_index is None:
+            raise ValueError("The Excel file needs a column named mobile.")
+        records = []
+        for row in rows:
+            value = row[mobile_index] if mobile_index < len(row) else None
+            if value is None or str(value).strip() == "":
+                continue
+            mobile = str(value).strip()
+            if mobile.endswith(".0") and mobile[:-2].isdigit():
+                mobile = mobile[:-2]
+            records.append({"mobile": mobile})
+        if not records:
+            raise ValueError("No mobile numbers were found in the Excel file.")
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception as exc:
+        return jsonify({"error": f"Could not read the Excel file: {exc}"}), 400
+    output_name = f"{Path(secure_filename(file.filename)).stem}.json"
+    return send_file(io.BytesIO(json.dumps(records, ensure_ascii=False, indent=2).encode("utf-8")), as_attachment=True, download_name=output_name, mimetype="application/json")
 
 def _attendance_dataframe():
     file = request.files.get("file")

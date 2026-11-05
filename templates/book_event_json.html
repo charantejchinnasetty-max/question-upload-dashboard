@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Book Event JSON{% endblock %}
+{% block eyebrow %}BOOK EVENT MANAGEMENT{% endblock %}
+{% block heading %}Excel to JSON{% endblock %}
+{% block content %}
+<section class="converter-hero"><div><h2>Convert student mobile numbers to JSON</h2><p>Upload the Book Event Excel file and download import-ready JSON in the required mobile-number format.</p></div></section>
+<section class="panel converter-panel"><p class="eyebrow">01 / UPLOAD EXCEL</p><h2>Student mobile-number file</h2><p class="attendance-copy">The Excel sheet must contain a column named <strong>mobile</strong>. Blank rows are ignored and each remaining row becomes a JSON record.</p>
+  <label class="converter-drop" id="book-json-drop" for="book-json-file"><strong>⇧ Drop an Excel file here</strong><span>or browse your device · .xlsx · maximum 20 MB</span></label>
+  <input id="book-json-file" type="file" accept=".xlsx" hidden>
+  <p id="book-json-filename" class="file-name"></p>
+  <button class="button" id="book-json-convert" disabled>Download JSON</button>
+  <p id="book-json-status" class="attendance-error" role="status"></p>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='book_event_json.js') }}"></script>{% endblock %}
