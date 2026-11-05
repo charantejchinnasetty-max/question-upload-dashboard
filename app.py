@@ -100,6 +100,12 @@ def student_dashboard_data():
     except RuntimeError as exc: return jsonify({"error": str(exc)}), 503
     except Exception: return jsonify({"error": "Could not load the student dashboard. Confirm DATABASE_URL and import a student Excel file."}), 500
 
+@app.get("/api/students/records")
+def student_records_data():
+    try: return jsonify({"records": student_data.student_records(request.args)})
+    except RuntimeError as exc: return jsonify({"error": str(exc)}), 503
+    except Exception: return jsonify({"error": "Could not load matching students."}), 500
+
 @app.post("/api/book-event-json/convert")
 def convert_book_event_json():
     file = request.files.get("file")
