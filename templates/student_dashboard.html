@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block eyebrow %}STUDENT MANAGEMENT{% endblock %}
+{% block heading %}Student Dashboard{% endblock %}
+{% block content %}
+<section class="converter-hero"><div><h2>Import student data securely</h2><p>Upload a full student Excel export to create a traceable database version for analytics, profiles, financial reporting, and attendance analysis.</p></div></section>
+<section class="panel converter-panel"><p class="eyebrow">01 / DATA IMPORT</p><h2>Student Excel import</h2><p class="attendance-copy">Required columns: <strong>Name</strong>, <strong>Mobile</strong>, and <strong>Batch_Name</strong>. Your original values are preserved with source row numbers.</p>
+<label class="converter-drop" id="student-import-drop" for="student-import-file"><strong>⇧ Drop the student Excel file here</strong><span>or browse your device · .xlsx · maximum 25 MB</span></label><input id="student-import-file" type="file" accept=".xlsx" hidden>
+<p id="student-import-name" class="file-name"></p><label class="student-replace"><input id="student-replace" type="checkbox"> Replace the active dataset (previous imports are retained for rollback)</label>
+<button id="student-import-button" class="button" disabled>Import student data</button><p id="student-import-status" class="attendance-error" role="status"></p>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='student_dashboard.js') }}"></script>{% endblock %}

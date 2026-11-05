@@ -16,6 +16,7 @@ from werkzeug.utils import secure_filename
 
 from parser import create_standard_docx, parse_docx
 import attendance_reports
+import student_data
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
@@ -72,6 +73,26 @@ def errors_page(): return render_template("errors.html")
 def attendance_reports_page(): return render_template("attendance_reports.html")
 @app.get("/book-event-json")
 def book_event_json_page(): return render_template("book_event_json.html")
+@app.get("/student-dashboard")
+def student_dashboard_page(): return render_template("student_dashboard.html")
+
+@app.post("/api/students/import")
+def student_import():
+    file = request.files.get("file")
+    if not file or not file.filename or not file.filename.lower().endswith(".xlsx"):
+        return jsonify({"error": "Choose a valid student .xlsx file."}), 400
+    try:
+        payload = file.read(25 * 1024 * 1024 + 1)
+        if len(payload) > 25 * 1024 * 1024:
+            return jsonify({"error": "The Excel file exceeds the 25 MB limit."}), 413
+        result = student_data.import_workbook(io.BytesIO(payload), secure_filename(file.filename), request.form.get("mode") == "replace")
+        return jsonify(result), 201
+    except RuntimeError as exc:
+        return jsonify({"error": str(exc)}), 503
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception:
+        return jsonify({"error": "The student import could not be completed. Check the Excel structure and database connection."}), 500
 
 @app.post("/api/book-event-json/convert")
 def convert_book_event_json():
