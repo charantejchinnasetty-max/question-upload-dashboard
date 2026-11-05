@@ -244,6 +244,6 @@ def student_records(filters=None):
     where, params = _filtered_where(filters)
     with _connection() as connection, connection.cursor() as cursor:
         records = _rows(cursor, f"""SELECT name, mobile, email, batch_name, college, college_state, mbbs_batch, status,
-             total_fee, discount_fee, paid_amount, due_amount, attended_event_count
+             total_fee, discount_fee, paid_amount, due_amount, attended_event_count, attended_events
              FROM student_records {where} ORDER BY name NULLS LAST, source_row_number""", params)
     return [{key: _clean(value) for key, value in row.items()} for row in records]
