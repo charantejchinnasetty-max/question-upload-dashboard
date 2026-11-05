@@ -3,7 +3,6 @@ from io import BytesIO
 from pathlib import Path
 import textwrap
 
-import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
@@ -13,7 +12,18 @@ BATCH_ALIASES = {}
 COUNT_ONLY_STATUS = None
 
 
+def _pandas():
+    """Load Pandas only when an attendance report is requested.
+
+    This keeps unrelated dashboard tools, such as Book Event JSON, available
+    on machines whose local Anaconda Pandas/NumPy installation is damaged.
+    """
+    import pandas as pd
+    return pd
+
+
 def _parse_dates(column):
+    pd = _pandas()
     values = column.astype(str).str.strip()
     iso = values.str.match(r"^\d{4}-\d{2}-\d{2}")
     dates = pd.Series(pd.NaT, index=values.index, dtype="datetime64[ns]")
@@ -24,6 +34,7 @@ def _parse_dates(column):
 
 def load(source):
     """Read the class-event Excel export, entirely in memory."""
+    pd = _pandas()
     sheets = pd.read_excel(source, sheet_name=None, dtype=str)
     dataframe = next((sheet for sheet in sheets.values()
                       if set(REQUIRED) <= {str(column).strip() for column in sheet.columns}), None)
@@ -52,6 +63,7 @@ def load(source):
 
 
 def summarize(dataframe):
+    pd = _pandas()
     days = pd.date_range(dataframe["Date"].min(), dataframe["Date"].max())
     daily = dataframe.groupby(["Batch", "Date"]).size().unstack(fill_value=0).reindex(columns=days, fill_value=0)
     daily = daily.loc[daily.sum(axis=1).sort_values(ascending=False).index]
