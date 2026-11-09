@@ -1,0 +1,86 @@
+/* Readability + phone layout. Loaded after all other styles. */
+
+/* Text inside white cards used the light colour meant for the blue banner — unreadable on any screen. */
+.panel .panel-title p{color:#5b6b7f}
+.panel .panel-title .button,.panel .panel-title a.button{color:#fff;opacity:1}
+
+/* Menu button (only visible on phones) */
+.menu-toggle{display:none}
+
+@media(max-width:860px){
+  html,body{overflow-x:hidden}
+  /* Compact top bar: logo + menu button; links open as a drawer */
+  aside,body.student-app aside{position:sticky!important;top:0;z-index:50;width:auto!important;height:56px!important;min-height:0!important;
+    display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between;
+    padding:0 14px!important;inset:auto!important;overflow:visible!important;box-shadow:0 2px 10px #0f2f4f33}
+  aside .brand,aside .student-brand{padding:0!important;margin:0!important;font-size:20px}
+  aside nav,aside .student-nav{display:none!important}
+  aside .student-nav-label,aside .student-side-card,aside small{display:none!important}
+  .menu-toggle{order:2;display:inline-flex;align-items:center;gap:7px;border:1px solid #ffffff33;background:#ffffff14;color:#fff;
+    font:600 14px Inter,"Segoe UI",Arial,sans-serif;padding:8px 12px;border-radius:10px;cursor:pointer}
+  .menu-toggle span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;box-shadow:0 6px 0 #fff,0 -6px 0 #fff;margin:0 2px}
+  body.menu-open aside nav,body.menu-open aside .student-nav{display:grid!important;position:fixed;top:56px;left:0;right:0;
+    max-height:calc(100vh - 56px);overflow-y:auto;gap:4px;padding:12px 14px 20px;background:#102a43;box-shadow:0 18px 30px #0f2f4f66;z-index:49}
+  body.menu-open aside nav a,body.menu-open aside .student-nav a{display:block;padding:13px 14px!important;font-size:15px;border-radius:10px;color:#dbe7f3}
+  body.menu-open::after{content:"";position:fixed;inset:56px 0 0;background:#0f1b2d55;z-index:40}
+
+  main{margin:0!important;padding:16px 14px 40px!important;max-width:100%!important}
+  header{flex-direction:row!important;flex-wrap:wrap;align-items:flex-end!important;gap:8px;margin-bottom:16px!important}
+  header h1{font-size:24px!important;line-height:1.2}
+  header .user{font-size:12px;padding:6px 10px}
+
+  /* Cards and grids: two small stat cards per row instead of one huge card per screen */
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .metrics .card{padding:14px!important}.metrics .card strong{font-size:22px!important}.metrics .card p{font-size:12.5px}
+  .student-kpis{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  body.student-app .student-kpi{height:auto!important;min-height:96px;padding:14px 10px!important}
+  body.student-app .student-kpi strong{font-size:18px!important;word-break:break-word}
+  body.student-app .student-kpi p{font-size:11.5px!important}
+  body.student-app .student-kpi>span{transform:scale(.8);right:6px!important;top:6px!important}
+  .panel{padding:16px!important;border-radius:12px!important}
+  .hero,.student-hero{padding:20px!important}
+  .student-hero h2{font-size:24px!important}
+
+  /* Wide tables scroll inside their card instead of stretching the whole page */
+  table{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}
+  .panel,.card,section{min-width:0;max-width:100%}
+
+  /* Upload drop zone: stacked, centred text */
+  .dropzone{flex-direction:column!important;text-align:center;gap:6px;padding:18px 12px;min-height:140px}
+  .dropzone b,.dropzone span,.dropzone em{display:block}
+  .steps{gap:6px!important;font-size:12px}
+  .actions{flex-wrap:wrap;gap:8px}
+  .actions .button{flex:1 1 auto;text-align:center}
+
+  /* Forms: full-width fields, 16px text so iPhone doesn't zoom in */
+  input,select,textarea{font-size:16px!important;max-width:100%}
+  .student-filter-fields{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .student-filter-fields label:first-child{grid-column:1/-1}
+}
+
+@media(max-width:380px){
+  .metrics,.student-kpis{grid-template-columns:1fr 1fr!important}
+  .student-filter-fields{grid-template-columns:1fr!important}
+}
+
+/* ── App-style ("hybrid") bottom tab bar ── */
+.tabbar{display:none}
+@media(max-width:860px){
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;
+    background:#ffffffee;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid #e3e9f0;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px #0f2f4f14}
+  .tabbar a,.tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border:0;background:none;
+    color:#64748b;font:600 11px Inter,"Segoe UI",Arial,sans-serif;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .tabbar i{font-style:normal;font-size:19px;line-height:1.2;width:46px;text-align:center;border-radius:99px;padding:2px 0;transition:.15s}
+  .tabbar a.on{color:#0e7f77}.tabbar a.on i{background:#e6f7f5}
+  main{padding-bottom:calc(84px + env(safe-area-inset-bottom))!important}
+  aside{padding-top:env(safe-area-inset-top)!important;height:calc(56px + env(safe-area-inset-top))!important}
+  /* Chat fills the screen between top bar and tab bar */
+  .ag-main{height:calc(100dvh - 56px - 74px - 120px)!important;min-height:420px!important}
+  /* Smooth app-like taps */
+  a,button{-webkit-tap-highlight-color:transparent}
+  .button,.ag-send,.menu-toggle{touch-action:manipulation}
+}
+@media(max-width:860px) and (display-mode:standalone){
+  header{padding-top:4px}
+}
