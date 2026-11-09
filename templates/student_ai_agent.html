@@ -4,26 +4,63 @@
 {% block heading %}Student AI Agent{% endblock %}
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='student_ai_agent.css') }}">
-<section class="agent-shell">
-  <aside class="agent-side panel">
-    <p class="eyebrow">DATA-BOUND ASSISTANT</p>
-    <h2>Ask your student data.</h2>
-    <p>The answers are calculated only from your active Excel import and the filters below.</p>
-    <div class="agent-filters">
-      <label>Search<input id="agent-search" class="text-input" placeholder="Name, mobile, email or college"></label>
-      <label>State<select id="agent-state"><option value="">All states</option></select></label>
-      <label>Batch<select id="agent-batch"><option value="">All batches</option></select></label>
-      <label>College<select id="agent-college"><option value="">All colleges</option></select></label>
-      <label>Status<select id="agent-status"><option value="">All statuses</option></select></label>
+<section class="ag" id="ag">
+  <div class="ag-main">
+    <header class="ag-top">
+      <div class="ag-id">
+        <span class="ag-avatar" aria-hidden="true">✦</span>
+        <div><b>Student AI Agent</b><small id="ag-mode">Checking…</small></div>
+      </div>
+      <div class="ag-top-actions">
+        <button type="button" class="ag-ghost" id="ag-filter-toggle" aria-expanded="false">⚲ Filters <span id="ag-filter-count" hidden></span></button>
+        <button type="button" class="ag-ghost" id="ag-new">＋ New chat</button>
+      </div>
+    </header>
+
+    <div class="ag-filters" id="ag-filters" hidden>
+      <p>Answers only use students matching these filters.</p>
+      <div class="ag-filter-grid">
+        <label>Search<input id="agent-search" placeholder="Name, mobile, email or college"></label>
+        <label>State<select id="agent-state"><option value="">All states</option></select></label>
+        <label>Batch<select id="agent-batch"><option value="">All batches</option></select></label>
+        <label>College<select id="agent-college"><option value="">All colleges</option></select></label>
+        <label>Status<select id="agent-status"><option value="">All statuses</option></select></label>
+      </div>
+      <button id="agent-reset" class="ag-link" type="button">Clear filters</button>
     </div>
-    <button id="agent-reset" class="text-button" type="button">Reset filters</button>
-    <div class="agent-suggestions"><b>Try asking</b><button type="button">Show the financial summary</button><button type="button">Which batches have the most students?</button><button type="button">Show college-wise student counts</button><button type="button">Which students have attendance?</button><button type="button">Find student 7013781364</button></div>
-  </aside>
-  <section class="agent-chat panel">
-    <header class="agent-chat-head"><div><p class="eyebrow">LIVE CONVERSATION</p><h2>Student AI Agent</h2></div><span id="agent-live">● Data ready</span></header>
-    <div id="agent-messages" class="agent-messages" aria-live="polite"><article class="agent-message assistant"><b>Student AI Agent</b><p>Ask a question about your active student data. I can calculate totals, find student profiles, show attendance subjects, and prepare batch, college, state, fee, paid, or due reports.</p></article></div>
-    <form id="agent-form" class="agent-composer"><textarea id="agent-question" rows="2" placeholder="Example: Show batch-wise fee and due totals"></textarea><button class="button" type="submit">Send →</button></form>
-  </section>
+
+    <div id="ag-scroll" class="ag-scroll" aria-live="polite">
+      <section id="ag-welcome" class="ag-welcome">
+        <span class="ag-hero-icon" aria-hidden="true">✦</span>
+        <h2 id="ag-greeting">Hi! Ask me anything about your students.</h2>
+        <p>I read your imported student data and answer in plain language — counts, lists, fees, dues, batches, colleges and class attendance. Every number comes from your data.</p>
+        <div class="ag-stats" id="ag-stats"></div>
+        <div class="ag-cats">
+          <div class="ag-cat"><h3>👥 Students</h3>
+            <button type="button" data-q="How many students do we have in each batch?">How many students in each batch?</button>
+            <button type="button" data-q="Show all students from Telangana">Show all students from Telangana</button>
+            <button type="button" data-q="Which college has the most students?">Which college has the most students?</button></div>
+          <div class="ag-cat"><h3>₹ Fees &amp; dues</h3>
+            <button type="button" data-q="Give me the fee collection summary">Fee collection summary</button>
+            <button type="button" data-q="Who has the highest pending dues? Show the top 10">Top 10 students with pending dues</button>
+            <button type="button" data-q="Which batch has the most due amount?">Which batch has the most due amount?</button></div>
+          <div class="ag-cat"><h3>📚 Attendance</h3>
+            <button type="button" data-q="Which classes have the highest attendance?">Classes with highest attendance</button>
+            <button type="button" data-q="Who attended the Microbiology class?">Who attended Microbiology?</button>
+            <button type="button" data-q="Which students have not attended any class?">Students with no attendance</button></div>
+        </div>
+      </section>
+      <div id="agent-messages" class="ag-messages"></div>
+    </div>
+
+    <form id="agent-form" class="ag-composer">
+      <div class="ag-input">
+        <textarea id="agent-question" rows="1" maxlength="2000" placeholder="Ask about students, batches, fees, dues or attendance…" aria-label="Your question"></textarea>
+        <button class="ag-send" type="submit" id="ag-send" aria-label="Send">➤</button>
+      </div>
+      <small>Answers come only from your active Excel import. Press Enter to send · Shift+Enter for a new line.</small>
+    </form>
+  </div>
 </section>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='student_ai_agent.js') }}"></script>{% endblock %}

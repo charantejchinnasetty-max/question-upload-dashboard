@@ -9,7 +9,6 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, send_file
-from flask_cors import CORS
 from openpyxl import load_workbook
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
@@ -17,6 +16,8 @@ from werkzeug.utils import secure_filename
 from parser import create_standard_docx, parse_docx
 import attendance_reports
 import student_data
+import student_agent
+import auth
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
@@ -28,8 +29,9 @@ MASTER_TEMPLATE = BASE_DIR / "static" / "samples" / "Question_Format_Sample.docx
 HISTORY_FILE, ERROR_FILE = GENERATED_DIR / "upload_history.json", GENERATED_DIR / "error_questions.json"
 LOGIN_URL = "https://admin.errorfreetestseries.in/managebe/proxy/api/employee/employeeLogin"
 UPLOAD_URL = "https://admin.errorfreetestseries.in/managebe/proxy/api/questions/bulk/testQuestions"
-app = Flask(__name__); app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024; app.secret_key = os.environ.get("FLASK_SECRET_KEY", "local-development-only")
-CORS(app); _jobs = {}; _client = None
+app = Flask(__name__); app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024; 
+auth.init_auth(app)
+_jobs = {}; _client = None
 
 def _db():
     global _client
@@ -79,6 +81,10 @@ def student_dashboard_page(): return render_template("student_dashboard.html")
 @app.get("/student-ai-agent")
 def student_ai_agent_page(): return render_template("student_ai_agent.html")
 
+@app.get("/api/students/agent/status")
+def student_ai_agent_status():
+    return jsonify({"mode": "ai" if student_agent.llm_enabled() else "builtin", "model": student_agent.MODEL if student_agent.llm_enabled() else None})
+
 @app.post("/api/students/agent")
 def student_ai_agent():
     payload = request.get_json(silent=True) or {}
@@ -88,8 +94,18 @@ def student_ai_agent():
         previous = next((str(item.get("content", "")) for item in reversed(history) if item.get("role") == "user"), "")
         if previous:
             question = f"{previous}. Follow-up: {question}"
+    filters = payload.get("filters") or {}
+    if student_agent.llm_enabled():
+        try:
+            return jsonify(student_agent.answer(str(payload.get("question", "")), history, filters))
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+        except Exception as exc:  # AI provider down / quota: fall back to the built-in agent
+            app.logger.warning("AI agent failed, using built-in agent: %s", exc)
     try:
-        return jsonify(student_data.agent_answer(question, payload.get("filters") or {}))
+        result = student_data.agent_answer(question, filters)
+        result.setdefault("mode", "builtin")
+        return jsonify(result)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except RuntimeError as exc:
