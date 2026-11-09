@@ -17,6 +17,7 @@ from werkzeug.utils import secure_filename
 from parser import create_standard_docx, parse_docx
 import attendance_reports
 import student_data
+import student_agent
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
@@ -79,6 +80,10 @@ def student_dashboard_page(): return render_template("student_dashboard.html")
 @app.get("/student-ai-agent")
 def student_ai_agent_page(): return render_template("student_ai_agent.html")
 
+@app.get("/api/students/agent/status")
+def student_ai_agent_status():
+    return jsonify({"mode": "ai" if student_agent.llm_enabled() else "builtin", "model": student_agent.MODEL if student_agent.llm_enabled() else None})
+
 @app.post("/api/students/agent")
 def student_ai_agent():
     payload = request.get_json(silent=True) or {}
@@ -88,8 +93,18 @@ def student_ai_agent():
         previous = next((str(item.get("content", "")) for item in reversed(history) if item.get("role") == "user"), "")
         if previous:
             question = f"{previous}. Follow-up: {question}"
+    filters = payload.get("filters") or {}
+    if student_agent.llm_enabled():
+        try:
+            return jsonify(student_agent.answer(str(payload.get("question", "")), history, filters))
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+        except Exception as exc:  # AI provider down / quota: fall back to the built-in agent
+            app.logger.warning("AI agent failed, using built-in agent: %s", exc)
     try:
-        return jsonify(student_data.agent_answer(question, payload.get("filters") or {}))
+        result = student_data.agent_answer(question, filters)
+        result.setdefault("mode", "builtin")
+        return jsonify(result)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except RuntimeError as exc:
