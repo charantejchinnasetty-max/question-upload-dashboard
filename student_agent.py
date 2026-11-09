@@ -299,7 +299,8 @@ SYSTEM = """You are the Student AI Agent for ASC Edtech / DBMCI Hyderabad (NEET 
 Rules:
 1. Answer ONLY from tool results. Never guess or invent students, counts, amounts or names. If the data can't answer, say so plainly and say what data would be needed.
 2. Exact counts come from `matching_students` / `matches` / group rows — never estimate.
-3. When the user's words might not match stored values (batch codes, college short names, subject nicknames like micro/pharma/derma/PSM/OBG), call find_values or dataset_overview first, then filter with the exact value.
+3. The same college is often spelled several ways in the data ("Government Medical College, Kadapa", "GMC Kadapa", "Govt. Medical College Kadappa"). When the message includes "Pre-resolved from the data", filter with op "in" using ALL listed stored values, and mention that spelling variants were combined. "Joined"/"admissions" in a month means joining_date within that month.
+3b. When the user's words might not match stored values (batch codes, college short names, subject nicknames like micro/pharma/derma/PSM/OBG), call find_values or dataset_overview first, then filter with the exact value.
 4. Attendance/subjects come from attended_events (free-text event names). A subject counts as attended if an event name contains it.
 5. Respect the dashboard filters already applied (they're applied automatically); mention them when they matter.
 6. Reply in clear, friendly, concise English (or the user's language if they write in another). Lead with the direct answer in one sentence, then key figures as short bullets or a small markdown table (max ~15 rows; the full result table is shown to the user automatically below your answer). Format money as ₹ with Indian digit grouping (e.g. ₹1,25,000).
@@ -360,7 +361,10 @@ def answer(question, history=None, ui_filters=None):
     if messages and messages[-1]["role"] == "user":
         messages.pop()
     active = {k: v for k, v in (ui_filters or {}).items() if v}
-    messages.append({"role": "user", "content": question + (f"\n\n[Dashboard filters currently applied: {json.dumps(active)}]" if active else "")})
+    import student_nlu
+    hints = student_nlu.hints_for_llm(question, ui_filters)
+    extra = (f"\n\n[Dashboard filters currently applied: {json.dumps(active)}]" if active else "") + (f"\n\n[{hints}]" if hints else "")
+    messages.append({"role": "user", "content": question + extra})
 
     steps, last_result = [], None
     for _ in range(MAX_TOOL_ROUNDS):

@@ -17,6 +17,7 @@ from parser import create_standard_docx, parse_docx
 import attendance_reports
 import student_data
 import student_agent
+import student_nlu
 import auth
 
 load_dotenv()
@@ -103,7 +104,15 @@ def student_ai_agent():
         except Exception as exc:  # AI provider down / quota: fall back to the built-in agent
             app.logger.warning("AI agent failed, using built-in agent: %s", exc)
     try:
-        result = student_data.agent_answer(question, filters)
+        try:
+            raw = str(payload.get("question", "")).strip()
+            prev = next((str(h.get("content", "")) for h in reversed(history) if h.get("role") == "user"), "")
+            result = student_nlu.answer(student_nlu.with_context(raw, prev), filters)
+        except Exception as exc:  # never let the smart parser break the agent
+            app.logger.warning("Question parser failed, using keyword agent: %s", exc)
+            result = None
+        if result is None:
+            result = student_data.agent_answer(question, filters)
         result.setdefault("mode", "builtin")
         return jsonify(result)
     except ValueError as exc:
