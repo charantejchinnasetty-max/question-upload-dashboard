@@ -8,4 +8,4 @@ uploads/*
 generated/*
 !generated/.gitkeep
 
-~$*.docx
+~$*.docxtests/fixtures/*.xlsx

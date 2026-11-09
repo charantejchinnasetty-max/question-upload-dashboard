@@ -20,7 +20,7 @@
 
   // ── Minimal, safe markdown (everything is escaped first) ──
   function inline(s) {
-    return s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+    return s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>').replace(/(^|\s)_([^_\n]+)_(?=\s|[.,!?]|$)/g, '$1<em>$2</em>');
   }
   function markdown(src) {
     const lines = esc(src || '').split('\n');
@@ -140,6 +140,7 @@
     question = (question || '').trim();
     if (!question || busy) return;
     busy = true; $('ag-send').disabled = true;
+    document.querySelectorAll('.ag-followups').forEach((f) => f.remove());
     renderUser(question); save({ type: 'user', text: question });
     $('agent-question').value = ''; grow();
     const stop = typing();
