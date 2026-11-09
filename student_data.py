@@ -89,20 +89,94 @@ def _amount(value):
         return None
 
 
+DATE_FORMATS = (
+    "%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%d.%m.%Y", "%Y/%m/%d", "%d/%m/%y", "%d-%m-%y", "%d.%m.%y",
+    "%d-%b-%Y", "%d-%b-%y", "%d %b %Y", "%d %B %Y", "%d-%B-%Y", "%b %d, %Y", "%B %d, %Y", "%b %d %Y", "%B %d %Y",
+    "%d %b, %Y", "%d %B, %Y", "%Y.%m.%d",
+)
+
+
 def _date(value):
+    """Read a date in any common Excel/Indian format (dd/mm first), Excel serial numbers and timestamps."""
     if isinstance(value, datetime):
         return value.date()
     if isinstance(value, date):
         return value
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return _excel_serial(value)
     value = _text(value)
     if not value:
         return None
-    for pattern in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d", "%d-%m-%Y"):
+    if re.fullmatch(r"\d{5}(\.\d+)?", value):
+        return _excel_serial(float(value))
+    v = re.sub(r"\s+", " ", value.strip())
+    v = re.sub(r"(\d)(st|nd|rd|th)\b", r"\1", v, flags=re.I)          # 7th Oct 2025
+    v = re.split(r"[T ](?=\d{1,2}:\d{2})", v)[0].strip()                # drop time part
+    for fmt in DATE_FORMATS:
         try:
-            return datetime.strptime(value, pattern).date()
+            return datetime.strptime(v, fmt).date()
         except ValueError:
             continue
+    try:  # US style only when dd/mm is impossible (e.g. 10/25/2025)
+        return datetime.strptime(v, "%m/%d/%Y").date()
+    except ValueError:
+        return None
+
+
+def _excel_serial(n):
+    try:
+        n = float(n)
+    except (TypeError, ValueError):
+        return None
+    if not 20000 <= n <= 80000:  # roughly 1954–2119; anything else isn't a date serial
+        return None
+    from datetime import timedelta
+    return date(1899, 12, 30) + timedelta(days=int(n))
+
+
+JOINING_KEYS = ("Joining_date", "Joining Date", "Date of Joining", "DOJ", "Join Date", "Joined On", "Joined_on", "Admission Date",
+                "Admission_date", "Date of Admission", "Enrolled On", "Enrollment Date", "Enrolment Date", "Created At", "Created_at")
+DUE_KEYS = ("Due_date", "Due Date", "Fee Due Date", "Next Due Date")
+
+
+def _pick(raw, keys):
+    """Value of the first matching column, ignoring case, spaces and underscores."""
+    norm = {re.sub(r"[^a-z0-9]", "", str(k).lower()): v for k, v in raw.items()}
+    for k in keys:
+        v = norm.get(re.sub(r"[^a-z0-9]", "", k.lower()))
+        if v is not None and str(v).strip():
+            return v
     return None
+
+
+_dates_repaired = False
+
+
+def repair_dates(force=False):
+    """Re-read joining/due dates from the stored original rows (raw_record) for rows saved before the
+    date reader understood every format. Safe to run repeatedly; only fills empty dates."""
+    global _dates_repaired
+    if _dates_repaired and not force:
+        return 0
+    fixed = 0
+    with _connection() as connection, connection.cursor() as cursor:
+        cursor.execute("SELECT to_regclass('student_records')")
+        if cursor.fetchone()[0] is None:
+            _dates_repaired = True
+            return 0
+        cursor.execute("SELECT id, raw_record, joining_date, due_date FROM student_records WHERE joining_date IS NULL OR due_date IS NULL")
+        updates = []
+        for rid, raw, jd, dd in cursor.fetchall():
+            raw = raw if isinstance(raw, dict) else json.loads(raw)
+            new_j = jd or _date(_pick(raw, JOINING_KEYS))
+            new_d = dd or _date(_pick(raw, DUE_KEYS))
+            if new_j != jd or new_d != dd:
+                updates.append((new_j, new_d, rid))
+        if updates:
+            cursor.executemany("UPDATE student_records SET joining_date = %s, due_date = %s WHERE id = %s", updates)
+            fixed = len(updates)
+    _dates_repaired = True
+    return fixed
 
 
 def _events(value):
@@ -185,7 +259,7 @@ def import_workbook(source, filename, replace=False):
             _text(raw.get("Batch_Name")), _text(raw.get("College State")), _text(raw.get("College")), _text(raw.get("Mbbs_Batch")),
             _text(raw.get("Company_options")), _text(raw.get("Payment_mode")), _text(raw.get("Status")), _text(raw.get("Employee Name")),
             _amount(raw.get("Total_fee")), _amount(raw.get("Discount_fee")), _amount(raw.get("Paid_amount")), _amount(raw.get("Due_amount")),
-            _date(raw.get("Joining_date")), _date(raw.get("Due_date")), attended_count, json.dumps(_events(raw.get("Attended_events")))
+            _date(_pick(raw, JOINING_KEYS)), _date(_pick(raw, DUE_KEYS)), attended_count, json.dumps(_events(raw.get("Attended_events")))
         ))
     if not prepared:
         raise ValueError("No student records were found in the Excel file.")
