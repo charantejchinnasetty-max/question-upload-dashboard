@@ -9,7 +9,6 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, send_file
-from flask_cors import CORS
 from openpyxl import load_workbook
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
@@ -18,6 +17,7 @@ from parser import create_standard_docx, parse_docx
 import attendance_reports
 import student_data
 import student_agent
+import auth
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
@@ -29,8 +29,9 @@ MASTER_TEMPLATE = BASE_DIR / "static" / "samples" / "Question_Format_Sample.docx
 HISTORY_FILE, ERROR_FILE = GENERATED_DIR / "upload_history.json", GENERATED_DIR / "error_questions.json"
 LOGIN_URL = "https://admin.errorfreetestseries.in/managebe/proxy/api/employee/employeeLogin"
 UPLOAD_URL = "https://admin.errorfreetestseries.in/managebe/proxy/api/questions/bulk/testQuestions"
-app = Flask(__name__); app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024; app.secret_key = os.environ.get("FLASK_SECRET_KEY", "local-development-only")
-CORS(app); _jobs = {}; _client = None
+app = Flask(__name__); app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024; 
+auth.init_auth(app)
+_jobs = {}; _client = None
 
 def _db():
     global _client
