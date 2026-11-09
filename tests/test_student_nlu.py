@@ -68,3 +68,26 @@ def test_period_parsing():
 def test_followup_keeps_context():
     assert n.with_context("what about Siddhartha?", "GMC Kadapa batch wise").endswith("batch wise")
     assert "Narayana" in n.with_context("and in November 2025?", "Narayana admissions in 2026")
+
+
+def test_date_formats():
+    import student_data as sd
+    from datetime import date as d
+    for v in ["07/10/2025", "07-Oct-2025", "2025-10-07 10:30:00", "7 October 2025", "45937", 45937.0, "07.10.2025",
+              "Oct 7, 2025", "2025/10/07", "7th Oct 2025", "2025-10-07T00:00:00.000Z"]:
+        assert sd._date(v) == d(2025, 10, 7), v
+    assert sd._date("10/25/2025") == d(2025, 10, 25)  # US style only when dd/mm is impossible
+    assert sd._date("not a date") is None and sd._date("123") is None
+
+
+def test_monthly_phrasings():
+    for q in ["monthly wise", "months wise count", "by months", "month on month joinings", "monthwise", "which month had most admissions"]:
+        assert n.parse_intent(q)["breakdown"] == "joining_month", q
+    i = n.parse_intent("show monthly count of all colleges")
+    assert (i["breakdown"], i["second"]) == ("joining_month", "college")
+
+
+def test_month_wise_gives_months_not_total():
+    r = n.answer("GMC Kadapa monthly wise")
+    assert len(r["rows"]) > 1 and all("Joining month" in row for row in r["rows"])
+    assert sum(row["students"] for row in r["rows"]) == 26

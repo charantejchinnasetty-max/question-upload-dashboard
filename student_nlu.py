@@ -260,7 +260,7 @@ BREAKDOWNS = [
     ("batch", r"\b(all|each|every|per|by)\s+batch(es)?\b|\bbatch[\s-]*wise\b|\bacross\s+batch"),
     ("college", r"\b(each|every|per|by)\s+college|\bcollege[\s-]*wise\b|\ball\s+colleges\b"),
     ("state", r"\b(each|every|per|by)\s+state|\bstate[\s-]*wise\b|\ball\s+states\b"),
-    ("joining_month", r"\bmonth[\s-]*wise\b|\bmonthly\b|\b(each|every|per|by)\s+month\b|\bmonth\s+by\s+month\b|\btrend\b"),
+    ("joining_month", r"\bmonths?[\s-]*(wise|by[\s-]*months?|on[\s-]*months?|basis)\b|\bmonthwise\b|\bmonthly\b|\b(each|every|per|by|all|across)\s+(the\s+)?months?\b|\btrend\b|\bwhich\s+month|\bin\s+which\s+month"),
     ("employee", r"\b(each|every|per|by)\s+(employee|counsell?or|staff)|\b(employee|counsell?or|staff)[\s-]*wise\b"),
     ("mbbs_batch", r"\bmbbs[\s-]*(batch|year)[\s-]*wise\b|\b(each|every|per|by)\s+mbbs"),
     ("status", r"\bstatus[\s-]*wise\b|\b(each|every|per|by)\s+status\b"),
@@ -279,7 +279,12 @@ def parse_intent(question):
     if re.search(r"\b(attend|attendance|class(es)?|events?)\b", q):
         measure = "attendance"
     listing = bool(re.search(r"\b(list|names?|who|details|show\s+(me\s+)?(the\s+)?(all\s+)?students|which\s+students|students\s+(from|in|of|at))\b", q)) and not re.search(r"\bhow\s+many\b|\bcount\b|\bnumber\s+of\b", q)
-    breakdown = next((f for f, rx in BREAKDOWNS if re.search(rx, q)), None)
+    found = [f for f, rx in BREAKDOWNS if f != "__month_first__" and re.search(rx, q)]
+    # "monthly count of all colleges" -> month first, then college
+    if "joining_month" in found:
+        found.remove("joining_month"); found.insert(0, "joining_month")
+    breakdown = found[0] if found else None
+    second = found[1] if len(found) > 1 else None
     top = re.search(r"\btop\s+(\d{1,3})\b", q)
     superlative = re.search(r"\b(most|highest|maximum|max|least|lowest|minimum|fewest)\b", q)
     if (superlative or top) and not breakdown:
@@ -288,7 +293,7 @@ def parse_intent(question):
                 breakdown = f
                 break
     return {
-        "measure": measure, "listing": listing, "breakdown": breakdown,
+        "measure": measure, "listing": listing, "breakdown": breakdown, "second": second,
         "top": int(top.group(1)) if top else None,
         "ascending": bool(superlative and re.search(r"least|lowest|minimum|fewest", superlative.group(1))),
         "with_due": bool(re.search(r"\b(with|having|has|have)\s+(pending\s+)?(dues?|balance)|\bnot\s+(fully\s+)?paid\b|\bpending\s+(fees?|dues?|payment)\b", q)),
@@ -352,6 +357,10 @@ def _batch_mentions(entities, question):
 
 def understand(question, ui_filters=None):
     """Parse a question into filters/grouping against the real data. Returns a plan dict."""
+    try:
+        student_data.repair_dates()  # one-time per server start: re-read dates saved before all formats were supported
+    except Exception:
+        pass
     with student_data._connection() as conn, conn.cursor() as cur:
         ents = load_entities(cur, ui_filters)
     plan = {"filters": [], "mentions": {}, "period": parse_period(question), "intent": parse_intent(question)}
@@ -478,18 +487,36 @@ def answer(question, ui_filters=None):
         return _result(text, note, res["rows"], cols, None, plan, question)
 
     if group:
-        rows = _grouped(plan, group, filters, it, ui_filters)
+        plan["question"] = question
+        rows = _grouped(plan, group, filters, it, ui_filters, it.get("second"))
         cols = list(rows[0].keys()) if rows else [LABEL[group], "students"]
-        chart = {"label": cols[0], "value": cols[1], "items": [{"label": str(r[cols[0]]), "value": r[cols[1]]} for r in rows[:25]]} if 1 < len(rows) <= 25 else None
+        two_d = bool(it.get("second")) and len(cols) > 2 and not isinstance(rows[0].get(cols[1]), (int, float)) if rows else False
+        vcol = cols[2] if two_d else cols[1] if len(cols) > 1 else None
+        chart = None if two_d or not vcol else ({"label": cols[0], "value": vcol, "items": [{"label": str(r[cols[0]]), "value": r[vcol]} for r in rows[:25] if r[cols[0]] != "No joining date"]} if 1 < len(rows) <= 25 else None)
+        nodate = sum(r.get("students", 0) for r in rows if r.get(cols[0]) == "No joining date")
+        if group == "joining_month" and nodate:
+            note = (note + " " if note else "") + f"{nodate} of these students have no joining date in the Excel, so they can't be placed in a month (shown as “No joining date”)."
         if total == 0:
             text = f"No students {desc}{period_note} were found."
         elif plan["intent"]["top"] or re.search(r"\b(most|highest|maximum|least|lowest|fewest)\b", question.lower()):
-            best = rows[0]
-            text = f"**{best[cols[0]]}** has the {'fewest' if it['ascending'] else 'most'} — **{_fmt(cols[1], best[cols[1]])}** {cols[1]}{(' ' + desc) if desc else ''}{period_note}."
+            vc = cols[2] if two_d else cols[1]
+            top_v = rows[0][vc]
+            tied = [r for r in rows if r[vc] == top_v and r[cols[0]] != "No joining date"]
+            who = " and ".join(f"**{r[cols[0]]}" + (f" – {r[cols[1]]}" if two_d else "") + "**" for r in tied[:5])
+            text = f"{who} {'have' if len(tied) > 1 else 'has'} the {'fewest' if it['ascending'] else 'most'} — **{_fmt(vc, top_v)}** {vc}{' each' if len(tied) > 1 else ''}{(' ' + desc) if desc else ''}{period_note}."
         else:
-            text = f"**{total} student{'s' if total != 1 else ''}** {desc or 'in total'}{period_note}. Here is the {LABEL[group]}-wise breakdown ({len(rows)} {_plural(LABEL[group], len(rows))}):"
-        if not chart:  # a single row: say it in words; otherwise the chart/table below shows it
-            text += "\n\n" + _md_table(rows[:15], cols) if len(rows) > 1 else ""
+            if two_d:
+                text = f"**{total} student{'s' if total != 1 else ''}** {desc or 'in total'}{period_note}, broken down by {LABEL[group]} and {LABEL[it['second']]} ({len(rows)} rows in the table below)."
+            else:
+                text = f"**{total} student{'s' if total != 1 else ''}** {desc or 'in total'}{period_note}. Here is the {LABEL[group]}-wise breakdown ({len(rows)} {_plural(LABEL[group], len(rows))}):"
+                if group == "joining_month":
+                    dated = [r for r in rows if r[cols[0]] != "No joining date"]
+                    if len(dated) > 1:
+                        peak = max(r["students"] for r in dated)
+                        busiest = ", ".join(r[cols[0]] for r in dated if r["students"] == peak)
+                        text += f" Busiest: **{busiest}** ({peak} students)."
+        if not chart and not two_d and len(rows) > 1:  # otherwise the chart/table below shows it
+            text += "\n\n" + _md_table(rows[:15], cols)
         return _result(text, note, rows, cols, chart, plan, question)
 
     # Single total (with money if asked)
@@ -547,33 +574,40 @@ def _aggregate(filters, ui_filters):
     return {"total_fee": float(r[0]), "paid": float(r[1]), "due": float(r[2]), "with_due": r[3], "with_att": r[4], "events": int(r[5])}
 
 
-def _grouped(plan, group, filters, it, ui_filters):
-    """Group rows. College grouping merges spelling variants into one row per real college."""
+def _grouped(plan, group, filters, it, ui_filters, second=None):
+    """Group rows (one or two levels). College values are merged into one row per real college;
+    months show as 'Oct 2025'; students without a joining date are shown as 'No joining date'."""
     metrics = _metrics(it["measure"])
-    label = LABEL[group].capitalize()
-    if group == "college":
-        res = _run({"filters": filters, "group_by": ["college"], "metrics": metrics, "limit": 500}, ui_filters)
-        ents = plan["mentions"].get("college") or plan["entities"]["college"]
-        index = {v: e for e in ents for v in e.variants}
-        merged = {}
-        for r in res["rows"]:
-            e = index.get(r["college"])
-            key = e.label if e else r["college"]
-            acc = merged.setdefault(key, {label: key})
-            for k, v in r.items():
-                if k != "college" and isinstance(v, (int, float)):
-                    acc[k] = acc.get(k, 0) + v
-        rows = list(merged.values())
-    else:
-        res = _run({"filters": filters, "group_by": [group], "metrics": metrics, "limit": 500}, ui_filters)
-        rows = [{label: (_month_name(r[group]) if group == "joining_month" else r[group]), "_sort": r[group], **{k: v for k, v in r.items() if k != group}} for r in res["rows"]]
+    groups = [group] + ([second] if second and second != group else [])
+    res = _run({"filters": filters, "group_by": groups, "metrics": metrics, "limit": 500}, ui_filters)
+    ents = plan["mentions"].get("college") or plan["entities"]["college"]
+    index = {v: e for e in ents for v in e.variants}
     names = {"students": "students", "sum_total_fee": "total fee", "sum_paid": "paid", "sum_due": "due", "sum_events_attended": "classes attended"}
-    rows = [{(names.get(k, k)): v for k, v in r.items()} for r in rows]
+
+    def show(field, value):
+        if field == "college":
+            e = index.get(value)
+            return e.label if e else value
+        if field == "joining_month":
+            return "No joining date" if value in (None, "(blank)") else _month_name(value)
+        return value
+
+    merged = {}
+    for r in res["rows"]:
+        key = tuple(show(g, r[g]) for g in groups)
+        acc = merged.setdefault(key, {LABEL[g].capitalize(): k for g, k in zip(groups, key)} | {"_sort": tuple(
+            ("9999-99" if r[g] in (None, "(blank)") else r[g]) if g == "joining_month" else str(k) for g, k in zip(groups, key))})
+        for k, v in r.items():
+            if k not in groups and isinstance(v, (int, float)):
+                acc[names.get(k, k)] = acc.get(names.get(k, k), 0) + v
+    rows = list(merged.values())
     sort_key = "due" if it["measure"] == "due" else "students"
-    if group == "joining_month" and not it["top"]:
-        rows.sort(key=lambda r: str(r.get("_sort", r[label])))
+    if group == "joining_month" and not it["top"] and not re.search(r"most|highest|least|lowest|fewest", plan.get("question", "")):
+        rows.sort(key=lambda r: r["_sort"])
     else:
         rows.sort(key=lambda r: (r.get(sort_key) or 0), reverse=not it["ascending"])
+        if group == "joining_month":  # "which month had most" shouldn't pick the no-date bucket
+            rows = [r for r in rows if r[LABEL[group].capitalize()] != "No joining date"] + [r for r in rows if r[LABEL[group].capitalize()] == "No joining date"]
     if it["top"]:
         rows = rows[: it["top"]]
     for r in rows:

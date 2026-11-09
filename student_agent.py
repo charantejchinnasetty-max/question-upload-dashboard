@@ -346,6 +346,10 @@ def answer(question, history=None, ui_filters=None):
         raise ValueError("Ask a question about your student data.")
     if len(question) > 2000:
         raise ValueError("Please keep questions under 2000 characters.")
+    try:
+        student_data.repair_dates()
+    except Exception:
+        pass
     client = _client()
     tools = [{"name": n, "description": d, "input_schema": s} for n, (_, d, s) in TOOLS.items()]
     messages = []
