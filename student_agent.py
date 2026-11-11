@@ -294,41 +294,95 @@ TOOLS = {
                     {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}),
 }
 
-SYSTEM = """You are the Student AI Agent for ASC Edtech / DBMCI Hyderabad (NEET PG / INI-CET coaching). Staff ask you questions about the imported student Excel data.
+import student_sql
 
-Rules:
-1. Answer ONLY from tool results. Never guess or invent students, counts, amounts or names. If the data can't answer, say so plainly and say what data would be needed.
-2. Exact counts come from `matching_students` / `matches` / group rows — never estimate.
-3. The same college is often spelled several ways in the data ("Government Medical College, Kadapa", "GMC Kadapa", "Govt. Medical College Kadappa"). When the message includes "Pre-resolved from the data", filter with op "in" using ALL listed stored values, and mention that spelling variants were combined. "Joined"/"admissions" in a month means joining_date within that month.
-3b. When the user's words might not match stored values (batch codes, college short names, subject nicknames like micro/pharma/derma/PSM/OBG), call find_values or dataset_overview first, then filter with the exact value.
-4. Attendance/subjects come from attended_events (free-text event names). A subject counts as attended if an event name contains it.
-5. Respect the dashboard filters already applied (they're applied automatically); mention them when they matter.
-6. Reply in clear, friendly, concise English (or the user's language if they write in another). Lead with the direct answer in one sentence, then key figures as short bullets or a small markdown table (max ~15 rows; the full result table is shown to the user automatically below your answer). Format money as ₹ with Indian digit grouping (e.g. ₹1,25,000).
-7. For follow-ups ("those", "them", "what about Andhra"), reuse the previous question's context.
-8. End with exactly one line: FOLLOWUPS: <question 1> | <question 2> | <question 3> — three short, useful next questions the user could ask about this data."""
+SYSTEM = """You are the Student AI Agent for ASC Edtech / DBMCI Hyderabad (NEET PG / INI-CET coaching).
+Staff ask questions about the student Excel data they imported. You are a careful data analyst.
+
+HOW TO WORK
+1. Understand the question fully: what is being counted/listed/summed, for which college(s), batch(es), state(s),
+   month(s)/year(s), and whether they want a total, a breakdown ("for all batches", "month wise", "each college"), a ranking or a list.
+2. If names may not match the stored values (college short names like GMC/SMC, city names, batch codes, nicknames,
+   typos), look them up first with find_values or dataset_overview. The message may also include "Pre-resolved from the data" — trust it.
+3. Get the numbers with run_sql (preferred: any SELECT over `students` / `student_events`) or the other tools.
+   For colleges ALWAYS filter/group on college_group (it merges spelling variants), e.g.
+   WHERE college_group ILIKE '%kadapa%' AND college_group ILIKE '%government%'.
+   "Joined / admissions / enrolled in <month>" = joining_date within that month. A month without a year = the most recent such month
+   (today is {today}); say which year you used.
+4. Check your answer: if a count is 0 or surprising, verify with a second query (e.g. look at the values that exist) before replying.
+5. Never guess or invent numbers, names or students. Every number must come from a tool result.
+
+{schema}
+
+ANSWER STYLE
+- First line: the direct answer in one sentence with the key number in **bold**.
+- Then short bullets or a small markdown table (max ~15 rows). The full result table is shown automatically under your answer.
+- Money as ₹ with Indian grouping (₹1,25,000). Mention filters/assumptions briefly (e.g. "spellings X and Y combined", "year 2025 assumed").
+- Reply in the user's language (English, Telugu, Hindi…). Be friendly and concise.
+- End with exactly one line: FOLLOWUPS: <q1> | <q2> | <q3> — three short useful next questions about this data."""
+
+RUN_SQL_TOOL = (
+    "Run ONE read-only PostgreSQL SELECT (or WITH … SELECT) over the virtual tables `students` and `student_events` "
+    "(already limited to the active import and dashboard filters). Returns up to 500 rows. Use aggregate queries for counts/sums.",
+    {"type": "object", "properties": {"sql": {"type": "string", "description": "A single SELECT statement"},
+                                      "purpose": {"type": "string", "description": "One short line: what this query checks"}},
+     "required": ["sql"]},
+)
 
 
-def llm_enabled():
-    return bool(os.environ.get("ANTHROPIC_API_KEY"))
+def _tool_specs():
+    specs = {"run_sql": RUN_SQL_TOOL}
+    for name in ("dataset_overview", "find_values", "get_student"):
+        specs[name] = (TOOLS[name][1], TOOLS[name][2])
+    return specs
+
+
+def provider(oidc_token=None):
+    """Which AI service to use. Order: Anthropic key, Vercel AI Gateway key/OIDC, OpenAI key."""
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        return {"kind": "anthropic", "label": "Claude", "model": os.environ.get("AI_MODEL", "claude-sonnet-5-5"), "key": os.environ["ANTHROPIC_API_KEY"]}
+    gw = os.environ.get("AI_GATEWAY_API_KEY") or oidc_token or os.environ.get("VERCEL_OIDC_TOKEN")
+    if gw and os.environ.get("AI_PROVIDER", "").lower() != "off":
+        return {"kind": "openai", "label": "Claude via Vercel AI Gateway", "model": os.environ.get("AI_MODEL", "anthropic/claude-sonnet-5.5"),
+                "key": gw, "base": "https://ai-gateway.vercel.sh/v1"}
+    if os.environ.get("OPENAI_API_KEY"):
+        return {"kind": "openai", "label": "OpenAI", "model": os.environ.get("AI_MODEL", "gpt-5"), "key": os.environ["OPENAI_API_KEY"],
+                "base": os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")}
+    return None
+
+
+def llm_enabled(oidc_token=None):
+    return provider(oidc_token) is not None
+
+
+MODEL = os.environ.get("AI_MODEL", "claude-sonnet-5-5")
 
 
 def _client():
     import anthropic
-    return anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=60)
+    return anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], timeout=90)
 
 
 def _chart_for(result):
+    """Bar chart when the result is 'label + number' with 2–25 rows."""
     rows, cols = result.get("rows") or [], result.get("columns") or []
-    if not rows or len(rows) > 25 or len(cols) < 2:
+    if not 2 <= len(rows) <= 25 or len(cols) < 2:
         return None
     label = cols[0]
-    value = next((c for c in cols[1:] if all(isinstance(r.get(c), (int, float)) for r in rows)), None)
-    if not value or not result.get("group"):
+    if not all(isinstance(r.get(label), str) or r.get(label) is None for r in rows):
         return None
-    return {"label": label, "value": value, "items": [{"label": str(r.get(label)), "value": r.get(value)} for r in rows]}
+    value = next((c for c in cols[1:] if all(isinstance(r.get(c), (int, float)) for r in rows)), None)
+    if not value:
+        return None
+    return {"label": label, "value": value, "items": [{"label": str(r.get(label) or "—"), "value": r.get(value)} for r in rows]}
 
 
 def run_tool(name, args, ui_filters):
+    if name == "run_sql":
+        try:
+            return student_sql.run((args or {}).get("sql", ""), ui_filters)
+        except Exception as e:  # validation or SQL error: let the model fix its query
+            return {"error": str(e).split("\n")[0][:400]}
     fn = TOOLS[name][0] if name in TOOLS else None
     if not fn:
         return {"error": f"Unknown tool {name}"}
@@ -339,68 +393,127 @@ def run_tool(name, args, ui_filters):
         return {"error": str(e)}
 
 
-def answer(question, history=None, ui_filters=None):
-    """Run the tool-using agent loop. Returns the same shape as student_data.agent_answer plus extras."""
+def _payload_for_model(out):
+    payload = dict(out)
+    if isinstance(payload.get("rows"), list) and len(payload["rows"]) > MAX_ROWS_TO_MODEL:
+        payload["rows"] = payload["rows"][:MAX_ROWS_TO_MODEL]
+        payload["note"] = f"Only the first {MAX_ROWS_TO_MODEL} rows are shown to you; the user sees all of them."
+    return json.dumps(payload, default=str)[:60000]
+
+
+def answer(question, history=None, ui_filters=None, oidc_token=None):
+    """Tool-using agent loop over any configured AI provider."""
     question = (question or "").strip()
     if not question:
         raise ValueError("Ask a question about your student data.")
     if len(question) > 2000:
         raise ValueError("Please keep questions under 2000 characters.")
+    prov = provider(oidc_token)
+    if not prov:
+        raise RuntimeError("No AI provider configured")
     try:
         student_data.repair_dates()
     except Exception:
         pass
-    client = _client()
-    tools = [{"name": n, "description": d, "input_schema": s} for n, (_, d, s) in TOOLS.items()]
-    messages = []
-    for h in (history or [])[-8:]:
+
+    turns = []
+    for h in (history or [])[-10:]:
         role, content = h.get("role"), str(h.get("content") or "")[:4000]
         if role in ("user", "assistant") and content:
-            if messages and messages[-1]["role"] == role:
-                messages[-1]["content"] += "\n" + content
+            if turns and turns[-1]["role"] == role:
+                turns[-1]["content"] += "\n" + content
             else:
-                messages.append({"role": role, "content": content})
-    if messages and messages[0]["role"] == "assistant":
-        messages.pop(0)
-    if messages and messages[-1]["role"] == "user":
-        messages.pop()
+                turns.append({"role": role, "content": content})
+    while turns and turns[0]["role"] == "assistant":
+        turns.pop(0)
+    if turns and turns[-1]["role"] == "user":
+        turns.pop()
     active = {k: v for k, v in (ui_filters or {}).items() if v}
     import student_nlu
     hints = student_nlu.hints_for_llm(question, ui_filters)
-    extra = (f"\n\n[Dashboard filters currently applied: {json.dumps(active)}]" if active else "") + (f"\n\n[{hints}]" if hints else "")
-    messages.append({"role": "user", "content": question + extra})
+    extra = (f"\n\n[Dashboard filters applied: {json.dumps(active)}]" if active else "") + (f"\n\n[{hints}]" if hints else "")
+    turns.append({"role": "user", "content": question + extra})
 
-    steps, last_result = [], None
+    system = SYSTEM.format(today=date.today().isoformat(), schema=student_sql.SCHEMA_DOC)
+    specs = _tool_specs()
+    state = {"steps": [], "last": None}
+
+    def handle(name, args):
+        out = run_tool(name, args, ui_filters)
+        step = {"tool": name, "error": out.get("error")}
+        if name == "run_sql":
+            step["purpose"] = (args or {}).get("purpose")
+            step["sql"] = (args or {}).get("sql")
+        state["steps"].append(step)
+        if not out.get("error") and out.get("rows") and name != "find_values":
+            state["last"] = out
+        return out
+
+    text = _loop_anthropic(prov, system, specs, turns, handle) if prov["kind"] == "anthropic" else _loop_openai(prov, system, specs, turns, handle)
+    return _finish(text, state["last"], state["steps"], prov["label"])
+
+
+def _loop_anthropic(prov, system, specs, messages, handle):
+    client = _client()
+    tools = [{"name": n, "description": d, "input_schema": sch} for n, (d, sch) in specs.items()]
     for _ in range(MAX_TOOL_ROUNDS):
-        res = client.messages.create(model=MODEL, max_tokens=2000, system=SYSTEM, tools=tools, messages=messages)
+        res = client.messages.create(model=prov["model"], max_tokens=2500, system=system, tools=tools, messages=messages)
         messages.append({"role": "assistant", "content": res.content})
         uses = [c for c in res.content if c.type == "tool_use"]
         if res.stop_reason != "tool_use" or not uses:
-            text = "\n".join(c.text for c in res.content if c.type == "text").strip()
-            return _finish(text, last_result, steps)
+            return "\n".join(c.text for c in res.content if c.type == "text").strip()
         results = []
         for u in uses:
-            out = run_tool(u.name, u.input, ui_filters)
-            steps.append({"tool": u.name, "input": u.input, "error": out.get("error")})
-            if not out.get("error") and out.get("rows") and u.name != "find_values":
-                last_result = {**out, "group": bool((u.input or {}).get("group_by")) or u.name == "event_breakdown"}
-            payload = dict(out)
-            if isinstance(payload.get("rows"), list) and len(payload["rows"]) > MAX_ROWS_TO_MODEL:
-                payload["rows"] = payload["rows"][:MAX_ROWS_TO_MODEL]
-                payload["note"] = f"Only first {MAX_ROWS_TO_MODEL} rows shown to you; the user sees the full table."
-            results.append({"type": "tool_result", "tool_use_id": u.id, "content": json.dumps(payload, default=str)[:60000], "is_error": bool(out.get("error"))})
+            out = handle(u.name, u.input)
+            results.append({"type": "tool_result", "tool_use_id": u.id, "content": _payload_for_model(out), "is_error": bool(out.get("error"))})
         messages.append({"role": "user", "content": results})
-    return _finish("That question needed too many steps. Could you ask it in smaller parts?", last_result, steps)
+    return "That question needed too many steps. Could you ask it in smaller parts?"
 
 
-def _finish(text, last_result, steps):
+def _loop_openai(prov, system, specs, turns, handle):
+    """OpenAI-compatible chat completions (Vercel AI Gateway, OpenAI)."""
+    tools = [{"type": "function", "function": {"name": n, "description": d, "parameters": sch}} for n, (d, sch) in specs.items()]
+    messages = [{"role": "system", "content": system}, *turns]
+    for _ in range(MAX_TOOL_ROUNDS):
+        data = _post_json(f"{prov['base']}/chat/completions", prov["key"],
+                          {"model": prov["model"], "messages": messages, "tools": tools, "tool_choice": "auto", "max_tokens": 2500})
+        msg = data["choices"][0]["message"]
+        calls = msg.get("tool_calls") or []
+        messages.append({"role": "assistant", "content": msg.get("content") or "", **({"tool_calls": calls} if calls else {})})
+        if not calls:
+            return (msg.get("content") or "").strip()
+        for c in calls:
+            try:
+                args = json.loads(c["function"].get("arguments") or "{}")
+            except json.JSONDecodeError:
+                args = {}
+            out = handle(c["function"]["name"], args)
+            messages.append({"role": "tool", "tool_call_id": c["id"], "content": _payload_for_model(out)})
+    return "That question needed too many steps. Could you ask it in smaller parts?"
+
+
+def _post_json(url, key, body):
+    """Small dependency-free HTTPS POST (standard library)."""
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
+                                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=90) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"AI service error {e.code}: {e.read().decode(errors='replace')[:300]}") from None
+
+
+def _finish(text, last_result, steps, label="AI"):
     followups = []
     m = re.search(r"^\s*FOLLOWUPS:\s*(.+)$", text, re.M)
     if m:
         followups = [q.strip() for q in m.group(1).split("|") if q.strip()][:3]
         text = text[: m.start()].rstrip()
-    out = {"answer": text or "I couldn't find an answer in the data.", "format": "markdown", "followups": followups, "steps": steps, "mode": "ai",
-           "rows": [], "columns": [], "chart": None}
+    out = {"answer": text or "I couldn't find an answer in the data.", "format": "markdown", "followups": followups,
+           "steps": [{"tool": (s.get("purpose") or s["tool"].replace("_", " ")), "error": s.get("error")} for s in steps],
+           "mode": "ai", "provider": label, "rows": [], "columns": [], "chart": None}
     if last_result:
         out["rows"] = last_result.get("rows") or []
         out["columns"] = last_result.get("columns") or (list(out["rows"][0]) if out["rows"] else [])

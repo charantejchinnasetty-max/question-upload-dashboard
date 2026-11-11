@@ -84,7 +84,8 @@ def student_ai_agent_page(): return render_template("student_ai_agent.html")
 
 @app.get("/api/students/agent/status")
 def student_ai_agent_status():
-    return jsonify({"mode": "ai" if student_agent.llm_enabled() else "builtin", "model": student_agent.MODEL if student_agent.llm_enabled() else None})
+    prov = student_agent.provider(request.headers.get("x-vercel-oidc-token"))
+    return jsonify({"mode": "ai" if prov else "builtin", "provider": prov["label"] if prov else None, "model": prov["model"] if prov else None})
 
 @app.post("/api/students/agent")
 def student_ai_agent():
@@ -96,13 +97,16 @@ def student_ai_agent():
         if previous:
             question = f"{previous}. Follow-up: {question}"
     filters = payload.get("filters") or {}
-    if student_agent.llm_enabled():
+    oidc = request.headers.get("x-vercel-oidc-token")
+    ai_error = None
+    if student_agent.llm_enabled(oidc):
         try:
-            return jsonify(student_agent.answer(str(payload.get("question", "")), history, filters))
+            return jsonify(student_agent.answer(str(payload.get("question", "")), history, filters, oidc))
         except ValueError as exc:
             return jsonify({"error": str(exc)}), 400
-        except Exception as exc:  # AI provider down / quota: fall back to the built-in agent
+        except Exception as exc:  # AI provider down / quota / bad key: fall back to the built-in agent
             app.logger.warning("AI agent failed, using built-in agent: %s", exc)
+            ai_error = str(exc)[:200]
     try:
         try:
             raw = str(payload.get("question", "")).strip()
@@ -114,6 +118,8 @@ def student_ai_agent():
         if result is None:
             result = student_data.agent_answer(question, filters)
         result.setdefault("mode", "builtin")
+        if ai_error:
+            result["ai_error"] = ai_error
         return jsonify(result)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
