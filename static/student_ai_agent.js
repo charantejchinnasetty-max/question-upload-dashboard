@@ -100,7 +100,7 @@
     n.innerHTML = `<span class="ag-avatar" aria-hidden="true">✦</span><div class="ag-bubble">
       <div class="ag-md">${data.error ? `<p class="ag-error">${esc(data.error)}</p>` : markdown(data.answer)}</div>
       ${result}${steps}
-      ${data.error ? '' : `<div class="ag-meta"><span class="ag-badge ${data.mode === 'ai' ? '' : 'basic'}">${data.mode === 'ai' ? '✦ AI answer' : 'Basic mode'}</span><button type="button" class="ag-chip-btn" data-copy="1">Copy</button>${question ? '<button type="button" class="ag-chip-btn" data-retry="1">↻ Ask again</button>' : ''}</div>`}
+      ${data.error ? '' : `<div class="ag-meta"><span class="ag-badge ${data.mode === 'ai' ? '' : 'basic'}">${data.mode === 'ai' ? '✦ AI answer' : 'Basic mode'}</span>${data.ai_error ? `<span class="ag-badge basic" title="${esc(data.ai_error)}">AI unavailable — basic answer</span>` : ''}<button type="button" class="ag-chip-btn" data-copy="1">Copy</button>${question ? '<button type="button" class="ag-chip-btn" data-retry="1">↻ Ask again</button>' : ''}</div>`}
     </div>`;
     n.querySelector('[data-copy]')?.addEventListener('click', (e) => { navigator.clipboard.writeText(data.answer || ''); e.target.textContent = 'Copied ✓'; setTimeout(() => (e.target.textContent = 'Copy'), 1500); });
     n.querySelector('[data-retry]')?.addEventListener('click', () => ask(question));
@@ -182,7 +182,7 @@
     $('ag-greeting').textContent = `${h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}! What would you like to know about your students?`;
     fetch('/api/students/agent/status').then((r) => r.json()).then((s) => {
       const m = $('ag-mode');
-      m.textContent = s.mode === 'ai' ? '● AI mode · understands any question' : '● Basic mode · add an AI key for full answers';
+      m.textContent = s.mode === 'ai' ? `● AI mode · ${s.provider || 'AI'} · understands any question` : '● Basic mode · connect an AI service for full answers';
       m.className = s.mode === 'ai' ? 'ai' : 'basic';
     }).catch(() => { $('ag-mode').textContent = 'Status unavailable'; });
     try {
