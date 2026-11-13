@@ -13,7 +13,7 @@ from docx.shared import Inches
 # Accept a normal question header as well as labels such as
 # "Question 3 (Non-Clinical)".  The parenthetical label is metadata, not part
 # of the question text; the following paragraph remains the question text.
-QUESTION_RE = re.compile(r"^(?:question|ques|q)\s*(\d+)(?:\s*\([^)]*\))?(?:\s*[:.)\-]\s*(.*)|\s*)$|^(\d+)\s*[.)]\s+(.+)$", re.I)
+QUESTION_RE = re.compile(r"^(?:question|ques|q)\s*(\d+)(?:\s*\([^)]*\))?(?:\s*[:.)\-|]\s*(.*)|\s*)$|^(\d+)\s*[.)]\s+(.+)$", re.I)
 OPTION_RE = re.compile(r"^(?:option\s*)?([A-Ha-h]|[1-8])\s*[.)\]:\-]\s*(.+)$", re.I)
 ANSWER_RE = re.compile(r"^(?:(?:correct\s*)?(?:answer|ans)|correct\s*(?:option|choice)?|right\s*answer)\s*(?:is)?\s*[:\-]?\s*(?:option|choice)?\s*\(?\s*([A-Ha-h]|[1-8])\s*\)?(?:[.)\]:\-]|\b)", re.I)
 EXPLANATION_RE = re.compile(r"^(?:(?:brief|detailed)?\s*explanations?(?:\s+of\s+all\s+options)?|rationale|reason)\s*[:\-]?\s*(.*)$", re.I)
