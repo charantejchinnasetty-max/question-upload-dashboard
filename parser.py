@@ -295,8 +295,6 @@ def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
         else:
             if candidate["image_paths"] and not candidate["image_description"]:
                 warnings.append({"question_number": candidate["number"], "question": candidate["text"], "reason": "An image was found without an image description.", "missing_field": "Image description", "recommended_correction": "Add descriptive text immediately after the image."})
-            if candidate["image_paths"]:
-                warnings.append({"question_number": candidate["number"], "question": candidate["text"], "reason": "Image files are preserved in the standardized DOCX, but the existing JSON schema requires hosted image URLs.", "missing_field": "Question_image URL", "recommended_correction": "Upload the preserved image files to the image service before API upload."})
             questions.append(_question_json(candidate, subject_id, created_by))
     if not candidates:
         errors.append({"question_number": "—", "question": "No questions identified", "reason": "No supported question numbering pattern was found.", "missing_field": "Question structure", "recommended_correction": "Start each question with Question 1:, Q1:, or 1. and include labelled options and an Answer: line."})

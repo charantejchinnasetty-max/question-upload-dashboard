@@ -1,3 +1,4 @@
+import copy
 import json
 import io
 import os
@@ -81,35 +82,55 @@ def book_event_json_page(): return render_template("book_event_json.html")
 def student_dashboard_page(): return render_template("student_dashboard.html")
 
 def _apply_image_urls(questions, uploaded):
-    """Place verified S3 URLs into the matching company JSON fields."""
+    """Embed verified S3 images inline in the question/option/explanation HTML.
+
+    Only inline <img> tags are used. Question_image, description_image and the
+    option imgUrl/upload fields stay empty: when they are filled the admin panel
+    shows "I already have an uploaded image" and renders every image twice.
+    Always works on a fresh copy, so pressing the button again never duplicates.
+    """
+    questions = copy.deepcopy(questions)
     by_question = {}
     for image in uploaded:
         by_question.setdefault(int(image["question_number"]), []).append(image)
     for question in questions:
-        images = by_question.get(int(question.get("Question_order", 0)), [])
-        for image in images:
+        for image in by_question.get(int(question.get("Question_order", 0)), []):
             url = image["url"]
             section = image.get("section")
             if section == "OPTION" and image.get("option_label"):
                 value = ord(image["option_label"]) - 64
                 for option in question.get("options", []):
                     if option.get("value") == value:
-                        option["imgUrl"], option["upload"] = url, True
+                        option["name"] = (option.get("name") or "") + f'<p><img src="{url}" alt="Option image"></p>'
                         break
             elif section == "QUESTION":
-                question["Question_image"] = question.get("Question_image") or url
                 question["Question"] += f'<p><img src="{url}" alt="Question image"></p>'
             else:
-                question["description_image"] = url if not question.get("description_image") else question["description_image"]
                 question["description"] = (question.get("description") or "") + f'<p><img src="{url}" alt="Explanation image"></p>'
     return questions
+
+def _job_from_upload(job_id):
+    """Vercel may route this request to a fresh instance without the in-memory job.
+    The browser re-sends the DOCX, so the job can be rebuilt on any instance."""
+    file = request.files.get("file")
+    if not _valid_docx(file):
+        return None
+    name = secure_filename(file.filename); path = UPLOAD_DIR / f"{job_id}_{name}"; file.save(path)
+    questions, errors, candidates, _ = parse_docx(path, request.form.get("subject"), image_dir=GENERATED_DIR / job_id / "images")
+    job = {"questions": questions, "errors": errors, "candidates": candidates, "subject": request.form.get("subject"), "filename": name, "output_path": GENERATED_DIR / f"{Path(name).stem}.json", "standard_docx_path": GENERATED_DIR / f"{Path(name).stem}_standardized.docx"}
+    _jobs[job_id] = job
+    return job
 
 @app.post("/api/process-s3/<job_id>")
 def process_s3(job_id):
     job = _jobs.get(job_id)
-    if not job:
-        return jsonify({"error": "Processing job expired. Analyze the DOCX again."}), 404
-    records = [record for candidate in job.get("candidates", []) for record in candidate.get("image_records", []) if record.get("path")]
+    records = [record for candidate in (job or {}).get("candidates", []) for record in candidate.get("image_records", []) if record.get("path") and Path(record["path"]).is_file()]
+    if not records:
+        try: job = _job_from_upload(job_id)
+        except Exception as exc: return jsonify({"error": f"Could not read DOCX: {exc}"}), 400
+        if not job:
+            return jsonify({"error": "Processing job expired. Analyze the DOCX again."}), 404
+        records = [record for candidate in job.get("candidates", []) for record in candidate.get("image_records", []) if record.get("path")]
     if not records:
         return jsonify({"error": "No embedded images were found in this document."}), 400
     try:
@@ -117,10 +138,9 @@ def process_s3(job_id):
         if target_kb not in {100, 200, 300, 500}:
             raise ValueError("Image target must be 100, 200, 300, or 500 KB.")
         uploaded = s3_images.upload_images(records, request.form.get("subject") or job.get("subject") or "QUESTIONS", target_kb)
-        questions = _apply_image_urls(job["questions"], uploaded)
+        questions = _apply_image_urls(job["questions"], uploaded)  # job["questions"] stays image-free
         _write(job["output_path"], questions)
-        job["questions"] = questions
-        return jsonify({"status": "ready", "uploaded": len(uploaded), "images": uploaded, "download_url": f"/download/{job_id}"})
+        return jsonify({"status": "ready", "uploaded": len(uploaded), "images": uploaded, "questions": questions})
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except Exception as exc:
