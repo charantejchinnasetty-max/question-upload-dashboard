@@ -109,7 +109,7 @@ def _save_image(part, image_dir, sequence):
 
 
 def _candidate(number, text):
-    return {"number": number, "text": text, "options": [], "answer_key": None, "explanation": [], "brief_explanation": [], "detailed_explanation": [], "detailed_heading": "Detailed Explanation of All Options:", "image_paths": [], "image_description": []}
+    return {"number": number, "text": text, "options": [], "answer_key": None, "explanation": [], "brief_explanation": [], "detailed_explanation": [], "detailed_heading": "Detailed Explanation of All Options:", "image_paths": [], "image_records": [], "image_description": []}
 
 
 def _paragraph_html(text):
@@ -187,8 +187,12 @@ def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
             continue
         if item["image_parts"]:
             for part in item["image_parts"]:
-                image_index += 1; current["image_paths"].append(_save_image(part, image_dir, image_index))
-            mode = "image"
+                image_index += 1
+                image_path = _save_image(part, image_dir, image_index)
+                current["image_paths"].append(image_path)
+                section = "EXPLANATION" if mode in {"post_answer", "brief", "detailed"} else ("OPTION" if mode == "options" else "QUESTION")
+                option_label = current["options"][-1][0] if section == "OPTION" and current["options"] else None
+                current["image_records"].append({"path": image_path, "question_number": current["number"], "section": section, "option_label": option_label, "sequence": image_index})
             if text: current["image_description"].append(text)
             continue
         image_description = IMAGE_DESCRIPTION_RE.match(text) if text else None

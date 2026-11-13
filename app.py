@@ -16,9 +16,13 @@ from werkzeug.utils import secure_filename
 from parser import create_standard_docx, parse_docx
 import attendance_reports
 import student_data
+<<<<<<< HEAD
 import student_agent
 import student_nlu
 import auth
+=======
+import s3_images
+>>>>>>> cb419b7 (add DOCX image processing and S3 JSON export)
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
@@ -78,6 +82,52 @@ def attendance_reports_page(): return render_template("attendance_reports.html")
 def book_event_json_page(): return render_template("book_event_json.html")
 @app.get("/student-dashboard")
 def student_dashboard_page(): return render_template("student_dashboard.html")
+
+def _apply_image_urls(questions, uploaded):
+    """Place verified S3 URLs into the matching company JSON fields."""
+    by_question = {}
+    for image in uploaded:
+        by_question.setdefault(int(image["question_number"]), []).append(image)
+    for question in questions:
+        images = by_question.get(int(question.get("Question_order", 0)), [])
+        for image in images:
+            url = image["url"]
+            section = image.get("section")
+            if section == "OPTION" and image.get("option_label"):
+                value = ord(image["option_label"]) - 64
+                for option in question.get("options", []):
+                    if option.get("value") == value:
+                        option["imgUrl"], option["upload"] = url, True
+                        break
+            elif section == "QUESTION":
+                question["Question_image"] = question.get("Question_image") or url
+                question["Question"] += f'<p><img src="{url}" alt="Question image"></p>'
+            else:
+                question["description_image"] = url if not question.get("description_image") else question["description_image"]
+                question["description"] = (question.get("description") or "") + f'<p><img src="{url}" alt="Explanation image"></p>'
+    return questions
+
+@app.post("/api/process-s3/<job_id>")
+def process_s3(job_id):
+    job = _jobs.get(job_id)
+    if not job:
+        return jsonify({"error": "Processing job expired. Analyze the DOCX again."}), 404
+    records = [record for candidate in job.get("candidates", []) for record in candidate.get("image_records", []) if record.get("path")]
+    if not records:
+        return jsonify({"error": "No embedded images were found in this document."}), 400
+    try:
+        target_kb = int(request.form.get("target_kb", "200"))
+        if target_kb not in {100, 200, 300, 500}:
+            raise ValueError("Image target must be 100, 200, 300, or 500 KB.")
+        uploaded = s3_images.upload_images(records, request.form.get("subject") or job.get("subject") or "QUESTIONS", target_kb)
+        questions = _apply_image_urls(job["questions"], uploaded)
+        _write(job["output_path"], questions)
+        job["questions"] = questions
+        return jsonify({"status": "ready", "uploaded": len(uploaded), "images": uploaded, "download_url": f"/download/{job_id}"})
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception as exc:
+        return jsonify({"error": f"S3 image processing failed: {exc}"}), 502
 
 @app.get("/student-ai-agent")
 def student_ai_agent_page(): return render_template("student_ai_agent.html")
@@ -262,10 +312,11 @@ def preview():
     standard_docx_path = GENERATED_DIR / f"{Path(name).stem}_standardized.docx"
     try: create_standard_docx(candidates, standard_docx_path, MASTER_TEMPLATE)
     except Exception as exc: return jsonify({"error": f"Could not create the standardized DOCX: {exc}"}), 500
-    _jobs[job_id] = {"questions": questions, "errors": errors, "subject": subject, "filename": name, "output_path": output_path, "standard_docx_path": standard_docx_path}; _write(output_path, questions); _write(ERROR_FILE, errors)
+    _jobs[job_id] = {"questions": questions, "errors": errors, "candidates": candidates, "subject": subject, "filename": name, "output_path": output_path, "standard_docx_path": standard_docx_path}; _write(output_path, questions); _write(ERROR_FILE, errors)
     record = {"id": job_id, "datetime": datetime.now(timezone.utc).isoformat(), "filename": name, "category": "", "test": "", "subject": subject or "", "total": len(questions), "uploaded": len(questions), "failed": len(errors), "status": "WARNING" if errors else "SUCCESS", "activity": "JSON generated", "errors": errors}
     history = _read(HISTORY_FILE, []); history.insert(0, record); _write(HISTORY_FILE, history)
-    return jsonify({"job_id": job_id, "count": len(questions), "found": len(candidates), "warnings": warnings, "errors": errors, "questions": questions, "output_filename": f"{Path(name).stem}.json", "standard_docx_filename": f"{Path(name).stem}_standardized.docx"})
+    image_summary = [{"question_number": candidate["number"], "section": image["section"], "option_label": image.get("option_label"), "source": Path(image["path"]).name if image.get("path") else ""} for candidate in candidates for image in candidate.get("image_records", [])]
+    return jsonify({"job_id": job_id, "count": len(questions), "found": len(candidates), "image_count": len(image_summary), "image_summary": image_summary, "warnings": warnings, "errors": errors, "questions": questions, "output_filename": f"{Path(name).stem}.json", "standard_docx_filename": f"{Path(name).stem}_standardized.docx"})
 
 @app.get("/download/<job_id>")
 def download_json(job_id):
