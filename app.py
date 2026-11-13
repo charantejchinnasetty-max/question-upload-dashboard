@@ -16,13 +16,10 @@ from werkzeug.utils import secure_filename
 from parser import create_standard_docx, parse_docx
 import attendance_reports
 import student_data
-<<<<<<< HEAD
 import student_agent
 import student_nlu
 import auth
-=======
 import s3_images
->>>>>>> cb419b7 (add DOCX image processing and S3 JSON export)
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
