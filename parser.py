@@ -293,8 +293,6 @@ def parse_docx(file_or_path, subject_id="", created_by=None, image_dir=None):
         if issues:
             errors.append({"question_number": candidate["number"], "question": candidate["text"] or "Unidentified question", "reason": "; ".join(issue[0] for issue in issues), "missing_field": ", ".join(issue[0] for issue in issues), "recommended_correction": " ".join(issue[1] for issue in issues)})
         else:
-            if candidate["image_paths"] and not candidate["image_description"]:
-                warnings.append({"question_number": candidate["number"], "question": candidate["text"], "reason": "An image was found without an image description.", "missing_field": "Image description", "recommended_correction": "Add descriptive text immediately after the image."})
             questions.append(_question_json(candidate, subject_id, created_by))
     if not candidates:
         errors.append({"question_number": "—", "question": "No questions identified", "reason": "No supported question numbering pattern was found.", "missing_field": "Question structure", "recommended_correction": "Start each question with Question 1:, Q1:, or 1. and include labelled options and an Answer: line."})
