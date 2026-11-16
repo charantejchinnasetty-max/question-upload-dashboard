@@ -121,6 +121,13 @@ def _job_from_upload(job_id):
     _jobs[job_id] = job
     return job
 
+@app.get("/api/s3-folders")
+def s3_folders():
+    folders, source, error = s3_images.list_folders(force=request.args.get("refresh") == "1")
+    return jsonify({"folders": folders, "source": source, "error": error,
+                    "suggested": s3_images.guess_folder(request.args.get("filename", ""), folders),
+                    "prefix": (os.environ.get("S3_PREFIX") or "uploads").strip("/")})
+
 @app.post("/api/process-s3/<job_id>")
 def process_s3(job_id):
     job = _jobs.get(job_id)
@@ -137,7 +144,15 @@ def process_s3(job_id):
         target_kb = int(request.form.get("target_kb", "200"))
         if target_kb not in {100, 200, 300, 500}:
             raise ValueError("Image target must be 100, 200, 300, or 500 KB.")
-        uploaded = s3_images.upload_images(records, request.form.get("subject") or job.get("subject") or "QUESTIONS", target_kb)
+        folders, _, _ = s3_images.list_folders()
+        folder = (request.form.get("folder") or "").strip()
+        if not folder:
+            return jsonify({"error": "Choose the S3 folder for these images."}), 400
+        if folder not in folders:
+            folders, _, _ = s3_images.list_folders(force=True)
+            if folder not in folders:
+                return jsonify({"error": f"Folder '{folder}' is not in the bucket. Refresh the folder list."}), 400
+        uploaded = s3_images.upload_images(records, folder, target_kb, document=job.get("filename"))
         questions = _apply_image_urls(job["questions"], uploaded)  # job["questions"] stays image-free
         _write(job["output_path"], questions)
         return jsonify({"status": "ready", "uploaded": len(uploaded), "images": uploaded, "questions": questions})
