@@ -7,7 +7,7 @@
   let history = [];
   let busy = false;
 
-  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, (c) => ({ '&': '&', '<': '<', '>': '>', "'": '&#39;', '"': '"' }[c]));
   const inr = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(n || 0));
   const num = (n) => Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
   const label = (c) => LABELS[c] || c.replace(/_/g, ' ').replace(/^\w/, (x) => x.toUpperCase());
@@ -18,7 +18,7 @@
     return { html: esc(v) };
   };
 
-  // ── Minimal, safe markdown (everything is escaped first) ──
+  // Minimal safe markdown
   function inline(s) {
     return s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>').replace(/(^|\s)_([^_\n]+)_(?=\s|[.,!?]|$)/g, '$1<em>$2</em>');
   }
@@ -51,7 +51,6 @@
     return html;
   }
 
-  // ── Results: chart + table + CSV ──
   function chartHtml(chart) {
     if (!chart?.items?.length) return '';
     const max = Math.max(...chart.items.map((x) => Number(x.value) || 0), 1);
@@ -73,7 +72,6 @@
     a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
-  // ── Rendering ──
   const scrollDown = () => { const s = $('ag-scroll'); s.scrollTop = s.scrollHeight; };
   function setWelcome() { $('ag-welcome').hidden = $('agent-messages').children.length > 0; }
 
@@ -130,10 +128,9 @@
     return () => { clearInterval(t); n.remove(); };
   }
 
-  // ── Conversation ──
   const filters = () => ({ search: $('agent-search').value.trim(), state: $('agent-state').value, batch: $('agent-batch').value, college: $('agent-college').value, status: $('agent-status').value });
   function save(entry) {
-    try { const all = JSON.parse(sessionStorage.getItem(STORE) || '[]'); all.push(entry); sessionStorage.setItem(STORE, JSON.stringify(all.slice(-40))); } catch { /* storage full or blocked */ }
+    try { const all = JSON.parse(sessionStorage.getItem(STORE) || '[]'); all.push(entry); sessionStorage.setItem(STORE, JSON.stringify(all.slice(-40))); } catch { }
   }
 
   async function ask(question) {
@@ -146,7 +143,7 @@
     const stop = typing();
     let data;
     try {
-      const res = await fetch('/api/students/agent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, filters: filters(), history: history.slice(-8) }) });
+      const res = await fetch('/api/students/agent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, filters: filters(), history: history.slice(-16) }) });
       data = await res.json().catch(() => ({}));
       if (!res.ok) data = { error: data.error || `Something went wrong (${res.status}). Please try again.` };
     } catch {
@@ -169,7 +166,6 @@
     setWelcome();
   }
 
-  // ── Setup ──
   function grow() { const t = $('agent-question'); t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 160) + 'px'; }
   function options(id, values) { const el = $(id), first = el.options[0].outerHTML; el.innerHTML = first + values.map((r) => `<option value="${esc(r.label)}">${esc(r.label)}</option>`).join(''); }
   function filterCount() {
